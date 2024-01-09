@@ -15,7 +15,7 @@
 ## 实现流程
 1.项目结构
 src
-  └─main
+└─main
       ├─java
       │  └─com
       │      └─CIM
