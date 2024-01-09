@@ -57,14 +57,39 @@ src<br>
               sqlite3.dll<br>
               tiff.dll<br>
               tin-terrain.dll<br>
-2.目前
+2.目前可接受一个tinterrain下的Post请求，接收一个tif文件路径和一个目录，将dll处理的结果存放在指定的目录中
 ## 实现难点
+JNA接口的映射规则:
+java接口和c++类中的方法/函数同名且同参数，Java和C++中的类型映射如下
+| C++类型   | Java类型      |
+|---------|-------------|
+| bool    | boolean     |
+| char    | byte        |
+| wchar_t | char        |
+| short   | short       |
+| int     | int         |
+| float   | float       |
+| double  | double      |
+| long    | NativeLong  |
+| String  | const char* |
 
 
 ## 部署方式
+1.使用下面的命令将项目打包为jar（使用Maven更加方便，或者IDE自带的MavenUI操作插件）
+
+```
+mvn package
+```
+
+2.将jar文件与其他dll文件放在同一目录下，然后使用下面命令运行jar包
+
+```
+java -jar .\CIM_Spring-1.0-SNAPSHOT.jar
+```
 
 
 ## 使用方式
-
+向本地80端口的tinterrain发送post请求，请求体中携带一个tif文件路径和一输出目录（JSON格式）
 
 ## 更新日志
+2024.1.9新增技术文档
