@@ -1,0 +1,254 @@
+#player {
+    width: 100%;
+    height: calc(100vh - 40px);
+    /* 假设导航栏的高度为 60px */
+    position: absolute;
+    margin-top: 40px;
+    /* 假设导航栏的高度为 60px */
+    left: 0;
+    overflow: hidden;
+}
+
+/* 控制台 */
+#bottomInfo {
+    /* position: absolute; */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20%;
+    resize: vertical;
+    /* 允许用户垂直调整元素的大小 */
+    overflow: auto;
+    /*如果内容超出 #bottomInfo 的大小，显示滚动条 */
+    background-color: rgb(240, 239, 239);
+    border: 2px solid rgb(228, 231, 237);
+    white-space: pre-line;
+    /* 保留空格和换行符 */
+    /* display: flex; */
+    /* justify-content: center; */
+    align-items: center;
+    overflow-x: hidden;
+    /* cursor: ns-resize; */
+}
+
+.demo-tabs>.el-tabs__content {
+    padding: 32px;
+    color: #6b778c;
+    font-size: 32px;
+    font-weight: 600;
+    background-color: rgb(240, 239, 239);
+}
+
+.el-tabs {
+    background-color: rgb(240, 239, 239);
+}
+
+.el-tabs--right .el-tabs__content,
+.el-tabs--left .el-tabs__content {
+    height: 100%;
+}
+
+#divlogs {
+    position: absolute;
+    /* border: 10px; */
+    white-space: pre-line;
+    /* 保留空格和换行符 */
+    /* resize: vertical; 允许用户垂直调整元素的大小 */
+    /*overflow: auto;  如果内容超出 #bottomInfo 的大小，显示滚动条 */
+    overflow-x: hidden;
+    padding-left: 50px;
+    /* 文本离左边有 10px 的距离 */
+    padding-bottom: 30px;
+    /* padding-top: 50px; */
+}
+
+#toptext {
+    position: sticky;
+    /* position: sticky;  */
+    /* bottom: 0%; */
+    padding-left: 2%;
+    display: flex;
+    align-items: center;
+    height: 18%;
+    margin-top: 0%;
+    top: 0px;
+    width: 100%;
+    background-color: rgb(240, 239, 239);
+    border: 2px solid rgb(228, 231, 237);
+    z-index: 10;
+    font-weight: bold;
+}
+
+#text-span:hover {
+    color: rgb(64, 158, 255);
+}
+
+/* 图层管理控件样式 */
+.layer-control {
+    width: 350px;
+    position: absolute;
+    right: 10px;
+    top: 500px;
+    border: 1px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5%;
+    cursor: move;
+    /* 可拖动的光标样式 */
+    z-index: 10;
+}
+
+.add-layer {
+    width: 200px;
+    position: absolute;
+    left: 10px;
+    top: 40px;
+    border: 1px;
+    background-color: #f9f9f9;
+    border-radius: 7px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    cursor: move;
+    /* 可拖动的光标样式 */
+    z-index: 1000;
+    font-size: 12px;
+    line-height: 1.5;
+    /* 增加行距 */
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* 图层列表样式 */
+.layer-list {
+    list-style-type: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 0;
+    margin-left: 8px;
+}
+
+/* 图层项样式 */
+.layer-item {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    /* 设置垂直居中 */
+    justify-content: space-between;
+    /* 设置内容两端对齐 */
+    height: 40px;
+    /* 设置固定的高度，可以根据实际需要调整 */
+}
+
+.delete-layer-symbol {
+    float: right;
+    margin-right: 10px;
+    background-color: #f9f9f9;
+    border: none;
+    cursor: pointer;
+}
+
+
+
+#layer-add {
+    position: fixed;
+    border-radius: 8px;
+    top: 40px;
+    right: 0;
+    border: 1px;
+    /* Add a border */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    /* Add a shadow */
+    padding: 14px 26px 14px 13px;
+    flex-direction: column;
+    background-color: #f9f9f9;
+    z-index: 15;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.button-group>.my-button {
+    flex: 1 0 30%;
+    margin: 5px;
+}
+
+.custom-row {
+    margin-top: 1vh;
+    /* Adjust as needed */
+}
+
+.labelbtn {
+    text-align: right;
+}
+
+/* 按钮样式 */
+.el-icon.el-notification__closeBtn {
+    cursor: pointer;
+}
+
+.el-icon.el-notification__closeBtn svg.hovered {
+    transform: scale(1.5);
+    color: rgb(64, 158, 255);
+}
+
+.ml {
+    margin-left: 7px;
+}
+
+.layerbtn {
+    position: relative;
+    float: right;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.delete-layer-symbol {
+    left: 6px;
+    margin-left: 20px;
+    /* 调整这个值来改变距离 */
+}
+
+.view-right {
+    position: fixed;
+    width: 40px;
+    height: auto;
+    right: 1%;
+    top: 20%;
+    z-index: 14;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+/* 面积测量图标 */
+.icon-mianji {
+    margin-bottom: 20px;
+    font-size: 25px;
+    color: gainsboro;
+    transition: font-size 0.3s ease, color 0.3s ease;
+}
+
+.icon-mianji:hover {
+    font-size: 27px;
+    color: rgb(67, 159, 255);
+}
+.icon-celiang {
+    margin-top: 3px;
+    margin-bottom: 20px;
+    font-size: 25px;
+    color: gainsboro;
+    transition: font-size 0.3s ease, color 0.3s ease;
+}
+
+.icon-celiang:hover {
+    font-size: 27px;
+    color: rgb(67, 159, 255);
+}
