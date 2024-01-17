@@ -1,9 +1,8 @@
 <template>
-  <!----------------------- 顶部导航栏 -->
+  <!----------------------- 顶部导航栏 ----------------------------->
   <div class="contain">
     <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" background-color="rgb(33,37,41)"
       text-color="#fff" active-text-color="#ffd04b" @select="handleSelect" :ellipsis="false">
-      <!-- <el-menu-item index="1">获取信息</el-menu-item> -->
       <el-sub-menu index="1">
         <template #title>
           <el-icon>
@@ -11,47 +10,22 @@
           </el-icon>
           <span>获取信息</span>
         </template>
-        <!-- <template #title>获取图像信息</template> -->
-
         <el-menu-item class="menu-text" index="1-1" @click="open1">鼠标位置</el-menu-item>
         <el-menu-item class="menu-text" index="1-2" @click="open2">视窗范围</el-menu-item>
       </el-sub-menu>
-      <el-sub-menu index="2">
-        <template #title>
-          <el-icon>
-            <i class="iconfont icon-ruler" />
-          </el-icon>
-          <span>地图测量</span>
-        </template>
-        <!-- <el-menu-item index="2-1">
-          面积测量
-        </el-menu-item>-->
-        <!-- <el-menu-item index="2-2">item two</el-menu-item> -->
-        <!-- <el-menu-item index="2-3">item three</el-menu-item> -->
-        <el-sub-menu index="2-1">
-          <template #title>面积测量</template>
-          <el-menu-item index="2-1-1">输入范围</el-menu-item>
-          <el-menu-item index="2-1-2">图中框选</el-menu-item>
-        </el-sub-menu>
-        <el-menu-item index="2-2">
-          <template #title>三角测量</template>
-          <!-- <el-menu-item index="2-2-1">图中标点</el-menu-item> -->
-          <!-- <el-menu-item index="2-2-2">图中画线</el-menu-item> -->
-        </el-menu-item>
-      </el-sub-menu>
-      <el-menu-item index="3" @click="drawer = true">
+      <el-menu-item index="2" @click="drawer = true">
         <el-icon>
           <icon-menu />
         </el-icon>
         <span>图层管理</span>
       </el-menu-item>
-      <el-menu-item index="4" @click="showAddDropdown">
+      <el-menu-item index="3" @click="showAddDropdown">
         <el-icon>
           <i class="iconfont icon-tuceng" />
         </el-icon>
         <span>瓦片管理</span>
       </el-menu-item>
-      <el-menu-item index="5" @click="showTerrainInfo">
+      <el-menu-item index="4" @click="showTerrainInfo">
         <el-icon>
           <el-icon>
             <Reading />
@@ -76,20 +50,20 @@
       </el-sub-menu>-->
 
       <div class="flex-grow" />
-      <el-menu-item index="6" @click="clickUser">
+      <el-menu-item index="5" @click="clickUser">
         <el-icon>
           <User />
         </el-icon>
         <span>用户中心</span>
       </el-menu-item>
-      <el-menu-item index="7">
+      <el-menu-item index="6">
         <el-icon>
           <Tools />
         </el-icon>
         <span>设置</span>
       </el-menu-item>
     </el-menu>
-    <!----------------------- 右侧信息框 -->
+    <!----------------------- 右侧信息框 --------------------------------------------->
     <div class="el-notification right"
       style="top: 50px; z-index: 2024; width: 330px; display: flex; padding: 14px 26px 14px 13px; border-radius: 8px; position: fixed; flex-direction: column;"
       v-show="isDivVisible">
@@ -102,6 +76,7 @@
           <p>高度：{{ location[2] }}</p>
         </i>
       </div>
+      <!-- 窗口右上角关闭按钮svg -->
       <i class="el-icon el-notification__closeBtn" @click="isDivVisible = false">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
           <path fill="currentColor"
@@ -109,6 +84,9 @@
         </svg>
       </i>
     </div>
+    <!----------------------- 右侧信息框 --------------------------------------------->
+
+    <!-- 视图范围信息窗口 -->
     <div class="el-notification right"
       style="top: 190px; z-index: 2024; width: 330px; display: flex; padding: 14px 26px 14px 13px; border-radius: 8px; position: fixed; flex-direction: column;"
       v-show="ViewDivVisible">
@@ -122,6 +100,7 @@
           <p>north: {{ viewRectangle.north }}</p>
         </i>
       </div>
+      <!-- 窗口右上角关闭按钮svg -->
       <i class="el-icon el-notification__closeBtn" @click="ViewDivVisible = false">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
           <path fill="currentColor"
@@ -129,23 +108,6 @@
         </svg>
       </i>
     </div>
-    <!----------------------- 用户中心 -->
-    <el-dialog v-model="dialogFormVisible" title="User Setting" width="30%">
-      <el-form :model="form">
-        <el-form-item label="url" :label-width="formLabelWidth">
-          <el-input v-model="form.url" autocomplete="off" placeholder="localhost:4000" clearable />
-        </el-form-item>
-        <el-form-item label="wsPort" :label-width="formLabelWidth">
-          <el-input v-model="form.wsPort" autocomplete="off" placeholder="2333" clearable />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="HostChange">Confirm</el-button>
-        </span>
-      </template>
-    </el-dialog>
 
     <!-- 计算框选区域瓦片信息 -->
     <TileCaculate style="float: right;" ref="refTile" />
@@ -162,7 +124,7 @@
 // 引入组件
 import TileCaculate from "./TileCaculate.vue";
 
-import { reactive, ref, computed, onMounted, onBeforeUnmount, h } from "vue";
+import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import {
   ElMessage,
   ElDrawer,
@@ -196,9 +158,9 @@ const refTile = ref<any>(null);
 //从vuex数据仓库里面取数据
 const store = useStore();
 
-let longitude = ref("");
-let latitude = ref("");
-let height = ref("");
+let longitude = ref(null);
+let latitude = ref(null);
+let height = ref(null);
 const AreaMeasureStatus = computed(() => store.state.AreaMeasureStatus);
 const EntityObjects = computed(() => store.state.EntityObjects);
 console.log("top-------EntityObjects", EntityObjects);
@@ -267,9 +229,10 @@ const userVisible = computed(() => store.state.userVisible); // 用户信息窗�
 console.log("vuexUrl: ", vuexUrl.value);
 console.log("vuexWsPort: ", vuexWsPort.value);
 
-longitude = location.value.longitude;
-latitude = location.value.latitude;
-height = location.value.height;
+
+// longitude = location.value.longitude;
+// latitude = location.value.latitude;
+// height = location.value.height;
 
 
 // -------点击用户中心
@@ -288,7 +251,7 @@ const showTerrainInfo = () => {
   //   showClose: true,
   //   confirmButtonText: "确定"
   // });
-  refTile.value.calculateTilesForLevels();
+  // refTile.value.calculateTilesForLevels();
   refTile.value.showInfoFunction();
 }
 
