@@ -6,8 +6,7 @@ import App from './App.vue'
 import './assets/me.min.js'
 import createStore  from './store/index.js'
 import './assets/iconfont.css'    // 引入阿里云字体图标css
-import autofit from 'autofit.js'
-// import router from './router/router'
+// import router from './router'
 
 const app = createApp(App)
 

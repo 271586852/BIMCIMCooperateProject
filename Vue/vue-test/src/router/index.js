@@ -1,4 +1,4 @@
-impoert Vue from 'vue'
+import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter) // 1. 调用路由对象

@@ -1,8 +1,9 @@
-<template>
-    <el-button text @click="dialogVisible = true" id="btnuser">
-        Click to open Dialog
-    </el-button>
+ <!--
+ * @FileDescription: 用户中心窗口实现
+ * @LastEditTime: 1.17
+ -->
 
+<template>
     <el-dialog v-model="dialogVisible" title="User Setting" width="30%">
         <el-form :model="form">
             <el-form-item label="url" :label-width="formLabelWidth">
@@ -19,6 +20,7 @@
             </span>
         </template>
     </el-dialog>
+
 </template>
   
 <script lang="ts" setup>

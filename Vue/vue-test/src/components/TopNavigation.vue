@@ -33,6 +33,18 @@
         </el-icon>
         <span>框选瓦片</span>
       </el-menu-item>
+      <el-sub-menu index="5">
+      <template #title>
+        <el-icon>
+          <icon-menu />
+        </el-icon>
+        <span>shp转换</span>
+      </template>
+      <el-menu-item index="5-1" @click="shpTogeojson">shp转geojson</el-menu-item>
+      <el-menu-item index="5-2" @click="shpToxyz">shp转xyz</el-menu-item>
+      <el-menu-item index="5-3" @click="xyzTransform">xyz转换</el-menu-item>
+      <el-menu-item index="5-4" @click="shpEdit">shp编辑</el-menu-item>
+    </el-sub-menu>
       <!-- <el-sub-menu index="4">
         <template #title>
           <el-icon>
@@ -50,19 +62,20 @@
       </el-sub-menu>-->
 
       <div class="flex-grow" />
-      <el-menu-item index="5" @click="clickUser">
+      <el-menu-item index="6" @click="clickUser">
         <el-icon>
           <User />
         </el-icon>
         <span>用户中心</span>
       </el-menu-item>
-      <el-menu-item index="6">
+      <el-menu-item index="7">
         <el-icon>
           <Tools />
         </el-icon>
         <span>设置</span>
       </el-menu-item>
     </el-menu>
+
     <!----------------------- 右侧信息框 --------------------------------------------->
     <div class="el-notification right"
       style="top: 50px; z-index: 2024; width: 330px; display: flex; padding: 14px 26px 14px 13px; border-radius: 8px; position: fixed; flex-direction: column;"
@@ -123,6 +136,7 @@
 <script lang="ts" setup>
 // 引入组件
 import TileCaculate from "./TileCaculate.vue";
+import axios from 'axios';
 
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import {
@@ -427,6 +441,93 @@ function confirmClick() {
     .catch(() => {
       // catch error
     });
+}
+
+
+function shpTogeojson() {
+  const url_geojson = 'http://127.0.0.1:4888/convert-geojson';  // ✅ 更新URL
+  let shp_file_path = "C:\\Users\\RISC\\Desktop\\Code\\shp2geojson\\test\\test_line.shp"
+
+  const selectedFilePath = window.prompt('Please enter the file path for the SHP file:', shp_file_path);
+
+  if (selectedFilePath) {
+    if (!selectedFilePath.endsWith('.shp')) {
+      ElMessageBox.alert('Please select a .shp file', 'Error');
+      return; // 🚫 阻止非.shp文件
+    }
+    shp_file_path = selectedFilePath.replace(/\\/g, "\\\\");
+  }
+
+  const data_geojson = { shp_path: shp_file_path };
+
+  axios.post(url_geojson, data_geojson)
+    .then(response_geojson => {
+      if (response_geojson.data) {
+        ElMessageBox.alert(response_geojson.data, 'Response');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+
+function shpToxyz() {
+  const url_xyz = 'http://127.0.0.1:4888/convert-xyz';
+  // let shp_file_path = 'C:\\Users\\RISC\\Desktop\\Code\\shp2geojson\\test\\test_line.shp';
+  let shp_file_path = "C:\\Users\\RISC\\Desktop\\Code\\shp2geojson\\test\\test_line.shp"
+
+  // Prompt user to select a file path
+  const selectedFilePath = window.prompt('Please enter the file path for the SHP file:', shp_file_path);
+
+  // Update shp_file_path if the user provided a new path
+  if (selectedFilePath) {
+    shp_file_path = selectedFilePath.replace(/\\/g, "\\\\");
+  }
+
+  const data_xyz = { shp_path: shp_file_path };
+
+  // Send a POST request to the server with the SHP file path
+  axios.post(url_xyz, data_xyz)
+    .then(response_xyz => {
+      // Handle the server's response
+      if (response_xyz.data) {
+        ElMessageBox.alert(response_xyz.data, 'Response');
+      }
+    })
+    .catch(error => {
+      // Handle any errors that occur during the request
+      console.error(error);
+    });
+}
+
+
+function xyzTransform() {
+  const url_xyzTransform = 'http://127.0.0.1:4888/xyzTransform';
+  let xyz_file_path = 'C:\\Users\\RISC\\Desktop\\Code\\shp2geojson\\test\\test_line.txt';
+
+  // Prompt user to select a file path
+  const selectedFilePath = window.prompt('Please enter the file path for the XYZ file:', xyz_file_path);
+
+  if (selectedFilePath) {
+    xyz_file_path = selectedFilePath;
+  }
+
+  const data_xyzTransform = { file_path: xyz_file_path };
+
+  axios.post(url_xyzTransform, data_xyzTransform)
+    .then(response_xyzTransform => {
+      if (response_xyzTransform.data) {
+        ElMessageBox.alert(response_xyzTransform.data, 'Response');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+function shpEdit() {
+  window.open('http://mapjs.bimant.com/');
 }
 
 const selectedObject = ref(null);

@@ -12,6 +12,7 @@
     "autofit.js": "^3.0.6",
     "axios": "^1.6.5",
     "element-plus": "^2.4.2",
+    "file-saver": "^2.0.5",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5",
     "vuex": "^4.0.2"
