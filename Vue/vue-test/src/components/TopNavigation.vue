@@ -1,3 +1,8 @@
+ <!--
+ * @FileDescription: 顶部导航栏菜单
+ * @LastEditTime: 1.20
+ -->
+
 <template>
   <!----------------------- 顶部导航栏 ----------------------------->
   <div class="contain">
@@ -13,7 +18,7 @@
         <el-menu-item class="menu-text" index="1-1" @click="open1">鼠标位置</el-menu-item>
         <el-menu-item class="menu-text" index="1-2" @click="open2">视窗范围</el-menu-item>
       </el-sub-menu>
-      <el-menu-item index="2" @click="drawer = true">
+      <el-menu-item index="2" @click="layerControl">
         <el-icon>
           <icon-menu />
         </el-icon>
@@ -35,9 +40,7 @@
       </el-menu-item>
       <el-sub-menu index="5">
       <template #title>
-        <el-icon>
-          <icon-menu />
-        </el-icon>
+        <el-icon><Refresh /></el-icon>
         <span>shp转换</span>
       </template>
       <el-menu-item index="5-1" @click="shpTogeojson">shp转geojson</el-menu-item>
@@ -155,7 +158,8 @@ import {
   Tools,
   User,
   Close,
-  Reading
+  Reading,
+  Refresh,
 } from "@element-plus/icons-vue";
 
 let lastClicked = ref("");
@@ -239,6 +243,7 @@ const viewRectangle = computed(() => store.state.viewRectangle);
 const vuexUrl = computed(() => store.state.vuexUrl);
 const vuexWsPort = computed(() => store.state.vuexWsPort);
 const userVisible = computed(() => store.state.userVisible); // 用户信息窗口
+const LayerControlVisible = computed(() => store.state.LayerControlVisible); // 图层控制窗口
 
 console.log("vuexUrl: ", vuexUrl.value);
 console.log("vuexWsPort: ", vuexWsPort.value);
@@ -254,6 +259,11 @@ const clickUser = () => {
   dialogFormVisible.value = false
 
   store.commit("updateUserVisible", true);
+}
+
+// --点击图层管理
+const layerControl = () => {
+  store.commit("updateLayerControlVisible", !LayerControlVisible.value);
 }
 
 // 显示框选瓦片信息

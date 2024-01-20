@@ -1,178 +1,204 @@
  <!--
- * @FileDescription: 页面中的图层控件面板以及图层管理器
- * @Author: D
- * @Date: 1.16
- * @LastEditTime: 1.17
+ * @FileDescription: 图层管理（显示、隐藏、删除->新增图层）
+ * @LastEditTime: 1.20
  -->
 
 <template>
-    <div>
-        <div id="layerControl-div">
-            <h3 style="margin-top: 1%; margin-bottom: 10%;">图层控件</h3>
-            <!-- 新增图层添加功能 -->
-            <!-- ------图层控件板块原始界面------------>
-            <div>
-                <div id="addLayerWindow">
-                    <el-button round id="addLayerButton" @click="showAddDropdown()">添加图层</el-button>
+    <div id="layerControl-div">
+        <h3 style="margin-top: 1%; margin-bottom: 10%;">图层控件</h3>
+
+        <!-- 新增图层添加功能 -->
+        <!-- ------图层控件板块原始界面------------>
+        <div>
+            <div id="addLayerWindow">
+                <el-button round id="addLayerButton" @click="showAddDropdown()">添加图层</el-button>
+            </div>
+            <div id="dropdown" style="display: none;">
+                <div id="dataset-window">
+                    <h4>添加数据集</h4>
+                    <el-button round @click="openAddLayerWindow('3DTilesWindow')">添加3DTiles数据集</el-button>
                 </div>
-                <div id="dropdown" style="display: none;">
-                    <div id="dataset-window">
-                        <h4>添加数据集</h4>
-                        <el-button round @click="openAddLayerWindow('3DTilesWindow')">添加3DTiles数据集</el-button>
+                <div id="component-window">
+                    <h4>添加三维组件</h4>
+                    <el-button round @click="openAddLayerWindow('POIWindow')">添加POI点</el-button>
+                    <div id="POIWindow" style="display: none;">
+                        <el-button round @click="openAddLayerWindow('labelWindow')">Label</el-button>
+                        <el-button round @click="openAddLayerWindow('markerWindow')">Marker</el-button>
+                        <el-button round @click="openAddLayerWindow('wavedecalWindow')">Wave Decal</el-button>
                     </div>
-                    <div id="component-window">
-                        <h4>添加三维组件</h4>
-                        <el-button round @click="openAddLayerWindow('POIWindow')">添加POI点</el-button>
-                        <div id="POIWindow" style="display: none;">
-                            <el-button round @click="openAddLayerWindow('labelWindow')">Label</el-button>
-                            <el-button round @click="openAddLayerWindow('markerWindow')">Marker</el-button>
-                            <el-button round @click="openAddLayerWindow('wavedecalWindow')">Wave Decal</el-button>
-                        </div>
-                        <el-button round @click="addPath()">添加路径</el-button>
-                        <el-button round @click="addArea()">添加区域</el-button>
-                    </div>
-                    <div id="overlay-window">
-                        <h4>添加叠加图层</h4>
-                        <el-row class="mb-4">
-                            <el-button round @click="addTMS()">添加TMS</el-button>
-                            <el-button round @click="addTianDiTu()">添加天地图</el-button>
-                            <el-button round @click="addXYZ()">添加XYZ</el-button>
-                        </el-row>
-                        <el-row class="mb-4 custom-row">
-                            <el-button round @click="addWMS()">添加WMS</el-button>
-                            <el-button round @click="addWMTS()">添加WMTS</el-button>
-                        </el-row>
-                    </div>
+                    <el-button round @click="addPath()">添加路径</el-button>
+                    <el-button round @click="addArea()">添加区域</el-button>
+                </div>
+                <div id="overlay-window">
+                    <h4>添加叠加图层</h4>
+                    <el-row class="mb-4">
+                        <el-button round @click="addTMS()">添加TMS</el-button>
+                        <el-button round @click="addTianDiTu()">添加天地图</el-button>
+                        <el-button round @click="addXYZ()">添加XYZ</el-button>
+                    </el-row>
+                    <el-row class="mb-4 custom-row">
+                        <el-button round @click="addWMS()">添加WMS</el-button>
+                        <el-button round @click="addWMTS()">添加WMTS</el-button>
+                    </el-row>
                 </div>
             </div>
-        </div>
-
-        <!-- 添加3DTiles数据集窗口 -->
-        <div class="add-layer" id="add-dataset-window" style="display: none;">
-            <h4 style="text-align: center;">添加3DTiles数据集</h4>
-            <el-input v-model="input1" id="dataset-name" placeholder="输入图层名称" clearable />
-            <el-input v-model="input2" id="dataset-url" placeholder="输入图层URL" clearable style="margin-top:5px" />
-            <div class="button-container">
-                <el-button round
-                    @click="add3DTiles(document.getElementById('dataset-name').value, document.getElementById('dataset-url').value)"
-                    style="margin-top:5px">确定</el-button>
-            </div>
-        </div>
-
-        <!-- 添加label窗口 -->
-        <div class="add-layer" id="labelWindow" style="display: none;">
-            <div class="labelbtn">
-                <i class="el-icon el-notification__closeBtn" @click="closeLabelWindow('labelWindow')"
-                    @mouseover="hover = true" @mouseleave="hover = false">
-                    <svg data-v-5f73bff2 viewBox="0 0 1024 1024" :class="{ 'hovered': hover }">
-                        <path data-v-5f73bff2 fill="currentColor"
-                            d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z" />
-                    </svg>
-                </i>
-            </div>
-            <h4 style="text-align: center;">添加Label</h4>
-            <div>
-                <label for="labelName">组件名称:</label>
-                <el-input type="text" size="small" v-model="labelName" placeholder="输入组件名称" />
-            </div>
-            <div>
-                <label for="longitude">经度:</label>
-                <el-input type="number" size="small" v-model="longitude" step="0.000001" placeholder="输入经度" />
-            </div>
-            <div>
-                <label for="latitude">纬度:</label>
-                <el-input type="number" size="small" v-model="latitude" step="0.000001" placeholder="输入纬度" />
-            </div>
-            <div>
-                <label for="elevation">高程:</label>
-                <el-input type="number" v-model="elevation" step="0.01" placeholder="输入高程" size="small" />
-            </div>
-            <div>
-                <label for="labelText">标注文字:</label>
-                <el-input type="text" v-model="labelText" placeholder="输入标注文字" size="small" />
-            </div>
-            <div>
-                <label for="anchorX">锚点X:</label>
-                <el-input type="number" v-model="anchorX" step="0.1" value="0.5" size="small" />
-            </div>
-            <div>
-                <label for="anchorY">锚点Y:</label>
-                <el-input type="number" v-model="anchorY" step="0.1" value="1" size="small" />
-            </div>
-            <div>
-                <label for="offsetX">偏移量X:</label>
-                <el-input type="number" v-model="offsetX" step="0.1" value="0" size="small" />
-            </div>
-            <div>
-                <label for="offsetY">偏移量Y:</label>
-                <el-input type="number" v-model="offsetY" step="0.1" value="0" size="small" />
-            </div>
-            <div>
-                <label for="minRange">可视范围最小值:</label>
-                <el-input type="number" v-model="minRange" step="100" value="0" size="small" />
-            </div>
-            <div>
-                <label for="maxRange">可视范围最大值:</label>
-                <el-input type="number" v-model="maxRange" step="100" value="30000" size="small" />
-            </div>
-            <div>
-                <label for="textColor">文字颜色:</label>
-                <el-input type="color" v-model="textColor" value="#ffffff" size="small" />
-            </div>
-            <div>
-                <label for="textSize">文字大小:</label>
-                <!-- <el-input type="range" v-model="textSize" min="0" max="100" value="10" size="small" /> -->
-                <el-slider v-model="textSize" placement="right" :min="0" :max="100" />
-            </div>
-            <div>
-                <label for="strokeColor">描边颜色:</label>
-                <el-input type="color" v-model="strokeColor" value="#000000" size="small" />
-            </div>
-            <div>
-                <label for="strokeSize">描边大小:</label>
-                <!-- <el-input type="range" v-model="strokeSize" min="0" max="100" value="1" size="small" /> -->
-                <el-slider v-model="strokeSize" placement="right" :min="0" :max="100" />
-            </div>
-            <div class="button-container">
-                <el-button round @click="addLabel()">确定</el-button>
-            </div>
-        </div>
-
-        <!-- 右下角图层列表 -->
-        <div class="layer-control" id="layerControl">
-            <ul id="layer-list">
-                <li v-for="layer in layers" :key="layer.id" id="layer-item" :id="layer.id">
-                    <input v-if="layers.length - 1" type="checkbox" :id="layer.name" v-model="layer.visible"
-                        @change="handleCheckboxChange(layer)" />
-                    <label :for="layer.name" :id="layer.id">{{ layer.name }}</label>
-                    <el-button v-if="layers.length - 1" type="danger" size="small" class="ml" link
-                        @click="deleteLayer(layer.id)">Delete</el-button>
-                </li>
-            </ul>
         </div>
     </div>
-</template>
 
+    <!-- 添加3DTiles数据集窗口 -->
+    <div class="add-layer" id="add-dataset-window" style="display: none;">
+        <h4 style="text-align: center;">添加3DTiles数据集</h4>
+        <el-input v-model="input1" id="dataset-name" placeholder="输入图层名称" clearable />
+        <el-input v-model="input2" id="dataset-url" placeholder="输入图层URL" clearable style="margin-top:5px" />
+        <div class="button-container">
+            <el-button round
+                @click="add3DTiles(document.getElementById('dataset-name').value, document.getElementById('dataset-url').value)"
+                style="margin-top:5px">确定</el-button>
+        </div>
+    </div>
+
+    <!-- 添加label窗口 -->
+    <div class="add-layer" id="labelWindow" style="display: none;">
+        <div class="labelbtn">
+            <i class="el-icon el-notification__closeBtn" @click="closeLabelWindow('labelWindow')" @mouseover="hover = true"
+                @mouseleave="hover = false">
+                <svg data-v-5f73bff2 viewBox="0 0 1024 1024" :class="{ 'hovered': hover }">
+                    <path data-v-5f73bff2 fill="currentColor"
+                        d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z" />
+                </svg>
+            </i>
+        </div>
+        <h4 style="text-align: center;">添加Label</h4>
+        <div>
+            <label for="labelName">组件名称:</label>
+            <el-input type="text" size="small" v-model="labelName" placeholder="输入组件名称" />
+        </div>
+        <div>
+            <label for="longitude">经度:</label>
+            <el-input type="number" size="small" v-model="longitude" step="0.000001" placeholder="输入经度" />
+        </div>
+        <div>
+            <label for="latitude">纬度:</label>
+            <el-input type="number" size="small" v-model="latitude" step="0.000001" placeholder="输入纬度" />
+        </div>
+        <div>
+            <label for="elevation">高程:</label>
+            <el-input type="number" v-model="elevation" step="0.01" placeholder="输入高程" size="small" />
+        </div>
+        <div>
+            <label for="labelText">标注文字:</label>
+            <el-input type="text" v-model="labelText" placeholder="输入标注文字" size="small" />
+        </div>
+        <div>
+            <label for="anchorX">锚点X:</label>
+            <el-input type="number" v-model="anchorX" step="0.1" value="0.5" size="small" />
+        </div>
+        <div>
+            <label for="anchorY">锚点Y:</label>
+            <el-input type="number" v-model="anchorY" step="0.1" value="1" size="small" />
+        </div>
+        <div>
+            <label for="offsetX">偏移量X:</label>
+            <el-input type="number" v-model="offsetX" step="0.1" value="0" size="small" />
+        </div>
+        <div>
+            <label for="offsetY">偏移量Y:</label>
+            <el-input type="number" v-model="offsetY" step="0.1" value="0" size="small" />
+        </div>
+        <div>
+            <label for="minRange">可视范围最小值:</label>
+            <el-input type="number" v-model="minRange" step="100" value="0" size="small" />
+        </div>
+        <div>
+            <label for="maxRange">可视范围最大值:</label>
+            <el-input type="number" v-model="maxRange" step="100" value="30000" size="small" />
+        </div>
+        <div>
+            <label for="textColor">文字颜色:</label>
+            <el-input type="color" v-model="textColor" value="#ffffff" size="small" />
+        </div>
+        <div>
+            <label for="textSize">文字大小:</label>
+            <!-- <el-input type="range" v-model="textSize" min="0" max="100" value="10" size="small" /> -->
+            <el-slider v-model="textSize" placement="right" :min="0" :max="100" />
+        </div>
+        <div>
+            <label for="strokeColor">描边颜色:</label>
+            <el-input type="color" v-model="strokeColor" value="#000000" size="small" />
+        </div>
+        <div>
+            <label for="strokeSize">描边大小:</label>
+            <!-- <el-input type="range" v-model="strokeSize" min="0" max="100" value="1" size="small" /> -->
+            <el-slider v-model="strokeSize" placement="right" :min="0" :max="100" />
+        </div>
+        <div class="button-container">
+            <el-button round @click="addLabel()">确定</el-button>
+        </div>
+    </div>
+
+    <!-- 图层管理模块 ---------->
+
+    <div class="container">
+        <!-- <el-icon class="icon-big" @click="toggleLayerControl">
+            <icon-menu />
+        </el-icon> -->
+        <transition name="fade" mode="out-in">
+            <div class="layer-control" v-show="isLayerControlVisible" @mousedown="dragMouseDown" ref="layerControlRef">
+                <h3 class="no-padding center-title">图层管理</h3>
+                <ul class="layer-list" v-for="layer in layers" :key="layer.id" :id="layer.id">
+                    <li class="layer-item" :id="layer.id" :key="layer.id">
+                        <el-checkbox type="checkbox" :id="layer.name" v-model="layer.visible"
+                            @change="toggleLayerVisibility(layer)" />
+                        <span class="layer-name" @click="toggleCollapse(layer.id)" :for="layer.name">
+                            <svg v-if="layer.overlays.length > 0" class="layer-svg" xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 1024 1024" data-v-ea893728=""
+                                :style="{ 'transform': isCollapsed[layer.id] ? 'rotate(0deg)' : 'rotate(90deg)', 'transition': 'transform 0.3s' }">
+                                <path fill="currentColor" class="svg-path"
+                                    d="M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0z">
+                                </path>
+                            </svg>{{ layer.name }}</span>
+                        <el-button class="delete-layer-symbol button" @click="deleteLayer(layer.id)" text>Delete</el-button>
+                        <ul v-if="layer.overlays" :class="{ 'collapse': isCollapsed[layer.id] }">
+                            <li v-for="overlay in layer.overlays" :key="overlay.id" class="overlay-item"
+                                style="margin-left: 20px;">
+                                <el-checkbox type="checkbox" :id="overlay.name" v-model="overlay.visible"
+                                    @change="toggleOverlayVisibility(layer.id, overlay)" />
+                                <span class="layer-name" :for="overlay.name">{{ overlay.name }}</span>
+                                <el-button class="delete-layer-symbol button" @click="deleteOverlay(layer.id, overlay.id)"
+                                    text>Delete</el-button>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </transition>
+    </div>
+</template>
+  
 <script setup>
-import { onMounted, ref, watch, computed } from "vue";
-import { useStore } from "vuex";
+import { ref, onMounted, watch, computed } from 'vue';
+import { useStore } from 'vuex';
+import {
+    Menu as IconMenu,
+} from "@element-plus/icons-vue";
 
 // 使用 defineProps 定义接收的父组件的方法作为 props
 const props = defineProps({
     api: {
         type: Object,
         required: true
-    },
+    }
 });
 
 // 从vuex数据仓库里面取数据
 const store = useStore();
 // 需要用的数据
 const isDropdownVisible = computed(() => store.state.isDropdownVisible);
-const layers = computed(() => store.state.EntityObjects);
+const isLayerControlVisible = computed(() => store.state.LayerControlVisible); // 图层管理状态
 
 // 声明响应式变量
 const hover = ref(false); //关闭按钮的hover状态
+
 // 3DTile数据集窗口-------
 const input1 = ref("");
 const input2 = ref("");
@@ -193,74 +219,18 @@ const textSize = ref(10);
 const strokeColor = ref("#000000");
 const strokeSize = ref(1);
 
+// --图层管理隐藏与展开
 
-// ----图层管理具体实现--------------------------------
-//创建一个数据结构，用来存储图层信息，图层包括entityTree中的每个tileset和每个tileset上的overlay，包括id，name，url，visible，type，opacity
-//通过循环遍历api.entityTree.get()和api.tileset.overlay.get()，获取到图层，然后使用循环遍历加载到数据结构中
-//可通过循环遍历数据结构，将图层信息加载到图层管理器中
-var layerData = ref([]);
+// const isLayerControlVisible = ref(false);
 
-const saveLayerData = async () => {
-    try {
-        // Get entityTree
-        const entityTree = await props.api.entityTree.get();
+// function toggleLayerControl() {
+//     isLayerControlVisible.value = !isLayerControlVisible.value;
+// }
 
-        console.log("entityTreeGet", entityTree);
-
-        // Loop through each layer in entityTree
-        for (const layer of entityTree) {
-            // Get overlays for each layer
-            const overlays = await api.tileset.overlay.get({
-                tilesetId: layer.id
-            });
-
-            // Create layer object
-            const layerObj = {
-                id: layer.id,
-                name: layer.name,
-                url: layer.url,
-                type: layer.type,
-                opacity: layer.opacity,
-                overlays: overlays // Add overlays to layer object
-            };
-
-            // 添加tileset图层到layerData
-            layerData.value.push(layerObj);
-
-            overlays.forEach(overlay => {
-                // Create overlay object
-                const overlayObj = {
-                    id: overlay.id,
-                    name: overlay.name,
-                    url: overlay.url,
-                    type: overlay.type,
-                    opacity: overlay.opacity
-                };
-
-                // 添加overlay图层到layerData
-                layerData.value.push(overlayObj);
-            });
-        }
-
-        console.log("layerData", layerData.value);
-    } catch (error) {
-        console.log("error", error, error.code);
-    }
-};
-
-// --初始化图层管理面板
-const initializeLayerControlPanel = async () => {
-    const entityTree = await props.api.entityTree.get();
-    layers.value = entityTree;
-
-    for (const layer of entityTree) {
-        addLayerToLayerControl(layer);
-    }
-};
-
-initializeLayerControlPanel();
-
-// 添加label的方法实现
+// ---图层控件-----------------------------
+/**
+ * 添加labal方法
+ */
 const addLabel = () => {
     console.log(
         document.getElementById("labelName").value,
@@ -304,7 +274,12 @@ const addLabel = () => {
         });
 }
 
-// --点击“添加图层”按钮，显示控制面板
+
+
+/**
+ * 点击“添加图层”按钮，显示控制面板
+ * @param {*} layerWindowName 传入添加控件名称
+ */
 const openAddLayerWindow = (layerWindowName) => {
     if (layerWindowName === "3DTilesWindow") {
         var addDatasetWindow = document.getElementById("add-dataset-window");
@@ -334,130 +309,14 @@ const openAddLayerWindow = (layerWindowName) => {
     }
 }
 
-//--关闭添加labal窗口
+/**
+ * 关闭添加labal窗口
+ */
 const closeLabelWindow = (WindowName) => {
     if (WindowName === "labelWindow") {
         document.getElementById("labelWindow").style.display = "none";
     }
 }
-
-// --右下角图层管理元素的拖拽实现----------------
-//拖动窗口功能
-function dragElement(elmnt) {
-    var pos1 = 0,
-        pos2 = 0,
-        pos3 = 0,
-        pos4 = 0;
-    elmnt.onmousedown = dragMouseDown;
-
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // 获取鼠标光标开始位置
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-    }
-
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // 计算鼠标光标的新位置
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        // 设置元素的新位置
-        var newTop = elmnt.offsetTop - pos2;
-        var newLeft = elmnt.offsetLeft - pos1;
-        // 确保元素不超出视口
-        newTop = Math.max(
-            0,
-            Math.min(newTop, window.innerHeight - elmnt.offsetHeight)
-        );
-        newLeft = Math.max(
-            0,
-            Math.min(newLeft, window.innerWidth - elmnt.offsetWidth)
-        );
-        elmnt.style.top = newTop + "px";
-        elmnt.style.left = newLeft + "px";
-    }
-
-    function closeDragElement() {
-        // 停止移动时解除绑定的事件
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
-}
-// --右下角图层管理元素的拖拽实现----------------
-
-//--删除图层
-const deleteLayer = (id) => {
-    const layerId = id;
-    props.api.entityTree
-        .delete({
-            ids: [layerId]
-        })
-        .then(res => {
-            console.log("删除成功", res);
-            deleteLayerToLayerControl(layerId);
-        })
-        .catch(error => {
-            console.log("error", error, error.code);
-        });
-}
-
-
-/**
- * @description 删除图层
- * @param {hu} id 图层id
- */
-const deleteLayerToLayerControl = (id) => {
-    //查找id对应的listItem
-    var layerItem = document.getElementById(id);
-    console.log("layerItem", layerItem);
-    if (layerItem) {
-        layerItem.parentNode.removeChild(layerItem);
-    }
-}
-
-
-/**
- * 添加add3DTiles功能
- * @param {*} name 图层名称
- * @param {*} url 图层url
- */
-const add3DTiles = (name, url) => {
-    //console.log('add3DTiles6666666666', name, url)
-    props.api.tileset
-        .add({
-            //id: '0', //可选
-            // pid: '-1',
-            name: name,
-            //visible: true,
-            url: url
-            // userData: 'tileset userData',
-            //headers: {
-            //token: '10_61002817968-1654152769054-671166',
-            // token1: '10_61002817968-1654152769054-671166',
-            // }
-        })
-        .then(res => {
-            console.log("成功添加", res, res.data.id);
-            var addLayer = {
-                id: res.data.id,
-                name: name,
-                url: url,
-                visible: true
-            };
-            addLayerToLayerControl(addLayer);
-        })
-        .catch(error => {
-            console.log("error", error, error.code);
-        });
-}
-
 
 /**
  * 展开图层界面
@@ -484,66 +343,276 @@ watch(
     }
 );
 
+// --图层控件----------------------------------------------------
+
+// 使用对象来保存每个项目的折叠状态
+const isCollapsed = ref({});
+
+// 切换折叠状态的函数
+const toggleCollapse = (layerId) => {
+    isCollapsed.value[layerId] = !isCollapsed.value[layerId];
+};
+
+const layersTest = ref(
+    [
+        {
+            "id": "FD7068DCCBAC4718E32F281D1FBB418B",
+            "pid": "-1",
+            "name": "terrain",
+            "type": "Tileset",
+            "visible": true,
+            "userData": "",
+            "url": "http:/localhost:3000/DEM/layer.json",
+            "headers": {},
+            "overlays": [
+                {
+                    "type": "tms",
+                    "name": "DOM",
+                    "url": "http:/localhost:3000/DOM",
+                    "index": 1,
+                    "headers": {},
+                    "style": "",
+                    "opacity": 1,
+                    "id": "B4F73C7AD68201AD4AB2E21A3F5D3FED",
+                    "layer": "",
+                    "format": "image/png",
+                    "pattern": "{\"line\":{\"lineDashArray\":[10,15],\"lineWidth\":5,\"lineOpacity\":1,\"lineColor\":\"rgba(255, 255, 255, 1)\"},\"ring\":{\"fill\":{\"fillOpacity\":1,\"fillColor\":\"rgba(255, 0, 0, 1)\"},\"outline\":{\"lineDashArray\":[10,15],\"lineWidth\":5,\"lineOpacity\":1,\"lineColor\":\"rgba(255, 255, 0, 1)\"}}}",
+                    "tilingScheme": "Geographic",
+                    "tilesetId": "FD7068DCCBAC4718E32F281D1FBB418B",
+                    "visible": true
+                }
+            ]
+        },
+        {
+            "id": "72A42845AA4BA424B5C3D721588F84F2",
+            "pid": "-1",
+            "name": "深大建筑",
+            "type": "Level",
+            "visible": true,
+            "userData": "",
+            "url": "/Game/map/Building",
+            "localOriginShift": {
+                "translation": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale3D": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "localToEarthLonLatH": [
+                113.92,
+                22.52,
+                2245
+            ],
+            "overlays": []
+        },
+        {
+            "id": "1EDDEB1E26E4F89AFCD80900A46D0050",
+            "pid": "-1",
+            "name": "深大道路",
+            "type": "Level",
+            "visible": true,
+            "userData": "",
+            "url": "/Game/map/Road",
+            "localOriginShift": {
+                "translation": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale3D": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "localToEarthLonLatH": [
+                113.92,
+                22.52,
+                2245
+            ],
+            "overlays": []
+        },
+        {
+            "id": "4F3A55D251B5C134CEB2CE602CCEA2D9",
+            "pid": "-1",
+            "name": "深大灌木",
+            "type": "Level",
+            "visible": true,
+            "userData": "",
+            "url": "/Game/map/Guanmu",
+            "localOriginShift": {
+                "translation": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale3D": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "localToEarthLonLatH": [
+                113.92,
+                22.52,
+                2245
+            ],
+            "overlays": []
+        },
+        {
+            "id": "9E13AA5E5D1DDAD1D563CDD9239AE51D",
+            "pid": "-1",
+            "name": "深大部件",
+            "type": "Level",
+            "visible": true,
+            "userData": "",
+            "url": "/Game/map/Bujian",
+            "localOriginShift": {
+                "translation": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale3D": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "localToEarthLonLatH": [
+                113.92,
+                22.52,
+                2245
+            ],
+            "overlays": []
+        },
+        {
+            "id": "147622A148445750D5E7E65ACFC3DF63",
+            "pid": "-1",
+            "name": "深大地形",
+            "type": "Level",
+            "visible": true,
+            "userData": "",
+            "url": "/Game/map/Terrain",
+            "localOriginShift": {
+                "translation": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale3D": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "localToEarthLonLatH": [
+                113.92,
+                22.52,
+                2245
+            ],
+            "overlays": []
+        },
+        {
+            "id": "02DA47FD3905568C8D3303158558262C",
+            "pid": "-1",
+            "name": "南山区",
+            "type": "Tileset",
+            "visible": true,
+            "userData": "",
+            "url": "http://172.31.61.68:3000/assets/data/gw/TILE_3D_MODEL/sz/nanshan2021/tileset.json",
+            "headers": {},
+            "overlays": []
+        }
+    ]
+);
+const layers = ref([])
+
+onMounted(async () => {
+    const entityTree = await props.api.entityTree.get();
+    layers.value = entityTree.map(layer => ({
+        ...layer,
+        visible: layer.visible, // 假设所有图层默认可见
+        overlays: [] // 将用于存储overlay的数组
+    }));
+    console.log('图层数据输出：', layers.value);
+    await loadOverlays();
+});
 
 /**
- * 隐藏overlay
- * @param {*} tilesetId 
- * @param {*} overlayId 
+ * 加载图层的overlay
  */
-const disappearOverlay = (tilesetId, overlayId) => {
-    props.api.tileset.overlay
-        .get({
-            tilesetId: tilesetId
-        })
-        .then(overlays => {
-            console.log("overlays22", overlays);
-            const overlay = overlays[0];
-            console.log("overlay", overlay); // overlay对象
-            props.api.tileset.overlay.update({
-                ...overlay,
-                //name:  'DOM111',
-                visible: false,
-                // opacity: 0
-            });
-        })
-        .then(res => {
-            console.log("更新成功", res);
-        })
-        .catch(error => {
-            console.log("error", error, error.code);
-        });
+async function loadOverlays() {
+    for (const layer of layers.value) {
+        const overlays = await props.api.tileset.overlay.get({ tilesetId: layer.id });
+        layer.overlays = overlays.map(overlay => ({
+            ...overlay,
+            visible: true // 假设所有overlay默认可见
+        }));
+    }
 }
-
 
 /**
- * 显示overlay
- * @param {*} tilesetId 
- * @param {*} overlayId 
+ * 改变图层的显示
+ * @param {*} layer 传入图层数据
  */
-const appearOverlay = (tilesetId, overlayId) => {
-    props.api.tileset.overlay
-        .get({
-            tilesetId: tilesetId
-        })
-        .then(overlays => {
-            console.log("overlays22", overlays);
-            const overlay = overlays[0];
-            console.log("overlay", overlay); // overlay对象
-            props.api.tileset.overlay.update({
-                ...overlay,
-                //name:  'DOM111',
-                visible: true,
-                // opacity: 1
-            });
-        })
-        .then(res => {
-            console.log("更新成功", res);
-        })
-        .catch(error => {
-            console.log("error", error, error.code);
-        });
+const toggleLayerVisibility = (layer) => {
+    props.api.entityTree.setVisible({
+        ids: [layer.id],
+        visible: layer.visible
+    });
 }
 
+/**
+ * 切换显示
+ * @param {*} tilesetId 覆盖图层的id
+ * @param {*} overlay overlay的id
+ */
+const toggleOverlayVisibility = (tilesetId, overlay) => {
+    props.api.tileset.overlay.update({
+        ...overlay,
+        opacity: overlay.visible ? 1 : 0
+    });
+}
+
+/**
+ * 删除图层
+ * @param {*} id 
+ */
+const deleteLayer = (id) => {
+    props.api.entityTree.delete({ ids: [id] });
+    layers.value = layers.value.filter(layer => layer.id !== id);
+}
 
 /**
  * 删除overlay
@@ -551,141 +620,157 @@ const appearOverlay = (tilesetId, overlayId) => {
  * @param {*} overlayId 
  */
 const deleteOverlay = (tilesetId, overlayId) => {
-    props.api.tileset.overlay
-        .delete({
-            tilesetId: tilesetId,
-            id: overlayId
-        })
-        .then(res => {
-            console.log("删除成功", res);
-        })
-        .catch(error => {
-            console.log("error", error, error.code);
-        });
+    props.api.tileset.overlay.delete({ tilesetId, id: overlayId });
+    const layer = layers.value.find(layer => layer.id === tilesetId);
+    if (layer) {
+        layer.overlays = layer.overlays.filter(overlay => overlay.id !== overlayId);
+    }
 }
 
-const layerList = document.getElementById("layer-list");
-/**
- * 添加图层到图层管理器中
- * @param {*} layer 传入图层object
- */
-const addLayerToLayerControl = (layer) => {
-    // 处理复选框变化事件
-    const handleCheckboxChange = (overlay) => {
-        if (overlay.visible) {
-            console.log("修改显示appearOverlay", layer.id, overlay.id);
-            disappearOverlay(layer.id, overlay.id);
-        } else {
-            console.log("修改显示disappearOverlay", layer.id, overlay.id);
-            appearOverlay(layer.id, overlay.id);
-        }
-    };
+// --可拖拽控件----
+let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-    // 获取图层的overlay
-    props.api.tileset.overlay
-        .get({
-            tilesetId: layer.id
-        })
-        .then((overlays) => {
-            if (overlays.length > 0) {
-                overlays.forEach((overlay) => {
-                    const overlayListItem = document.createElement("li");
-                    overlayListItem.className = "overlay-item";
+const layerControlRef = ref(null);
 
-                    const checkbox = document.createElement("input");
-                    checkbox.type = "checkbox";
-                    checkbox.id = overlay.name;
-                    checkbox.checked = true;
+function dragMouseDown(e) {
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+}
 
-                    checkbox.addEventListener("change", () => {
-                        handleCheckboxChange(overlay);
-                    });
+function elementDrag(e) {
+    if (!layerControlRef.value) return;
 
-                    overlayListItem.appendChild(checkbox);
+    e.preventDefault();
+    // 计算鼠标移动的距离
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
 
-                    const overlayLabel = document.createElement("label");
-                    overlayLabel.htmlFor = overlay.name;
-                    overlayLabel.textContent = overlay.name;
+    const elmnt = layerControlRef.value;
 
-                    overlayListItem.appendChild(overlayLabel);
+    // 计算新位置
+    let newLeft = elmnt.offsetLeft - pos1;
+    let newTop = elmnt.offsetTop - pos2;
 
-                    overlayListItem.style.marginLeft = "20px";
+    // 获取浏览器窗口的尺寸
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
 
-                    const minusSymbol = document.createElement("el-button");
-                    minusSymbol.textContent = "Delete";
-                    minusSymbol.className = "delete-layer-symbol";
+    // 获取元素的尺寸
+    const elmntWidth = elmnt.offsetWidth;
+    const elmntHeight = elmnt.offsetHeight;
 
-                    minusSymbol.addEventListener("click", () => {
-                        deleteOverlay(layer.id, overlay.id);
-                    });
-
-                    overlayListItem.appendChild(minusSymbol);
-
-                    const layerItem = document.getElementById(layer.id);
-
-                    if (layerList && layerItem) {
-                        layerList.insertBefore(overlayListItem, layerItem.nextSibling);
-                    } else {
-                        console.error("错误：layerList or layerItem does not exist");
-                    }
-                });
-            }
-        });
-
-    // 创建主图层项
-    const listItem = document.createElement("li");
-    listItem.className = "layer-item";
-    listItem.id = layer.id;
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = true;
-    checkbox.id = layer.name;
-
-    if (layerList) {
-        const minusSymbol = document.createElement("el-button");
-        minusSymbol.textContent = "Delete";
-        minusSymbol.className = "delete-layer-symbol";
-        minusSymbol.style.marginLeft = "20px";
-
-        minusSymbol.addEventListener("click", () => {
-            deleteLayer(layer.id);
-        });
-
-        listItem.appendChild(checkbox);
-        listItem.appendChild(document.createElement("label"));
-        listItem.appendChild(minusSymbol);
-        layerList.appendChild(listItem);
-    } else {
-        console.error("layerList does not exist");
+    // 确保元素不会移动到浏览器窗口外
+    // 不允许左边界超出
+    if (newLeft < 0) {
+        newLeft = 0;
+    }
+    // 不允许右边界超出
+    else if (newLeft + elmntWidth > windowWidth) {
+        newLeft = windowWidth - elmntWidth;
     }
 
-    // 处理主图层复选框变化事件
-    checkbox.addEventListener("change", () => {
-        props.api.entityTree.setVisible({
-            ids: layer.id,
-            visible: checkbox.checked
-        });
-    });
-};
-
-// onMounted(() => {
-//     saveLayerData();
-// });
-// 钩子函数，在组件挂载后执行一段逻辑，元素的拖拽功能
-onMounted(() => {
-    saveLayerData();
-    const elmnt = document.getElementById("layerControl");
-    if (elmnt) {
-        dragElement(elmnt);
+    // 不允许上边界超出
+    if (newTop < 40) {
+        newTop = 40;
     }
-});
+    // 不允许下边界超出
+    else if (newTop + elmntHeight > windowHeight) {
+        newTop = windowHeight - elmntHeight;
+    }
 
+    // 应用新位置
+    elmnt.style.left = newLeft + 'px';
+    elmnt.style.top = newTop + 'px';
+}
 
-
+function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+}
+// --可拖拽控件----
 </script>
-
+  
 <style scoped>
+#layer-add {
+    /* 添加或调整样式以改善外观 */
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    cursor: move;
+}
+
+
+
+/* 图层管理控件样式 */
+.layer-control {
+    width: 200px;
+    position: absolute;
+    right: 10px;
+    top: 500px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 10px;
+    cursor: move;
+    /* 可拖动的光标样式 */
+    z-index: 1000;
+}
+
+.add-layer {
+    width: 200px;
+    position: absolute;
+    left: 10px;
+    top: 50px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 10px;
+    cursor: move;
+    /* 可拖动的光标样式 */
+    z-index: 1000;
+}
+
+/* 图层列表样式 */
+.layer-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 图层项样式 */
+.layer-item {
+    margin-bottom: 7px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    cursor: default;
+}
+
+.layer-item:hover {
+    opacity: 0.9;
+    transform: scale(1.01);
+    /* 放大到原来的1.1倍 */
+}
+
+.delete-layer-symbol {
+    float: right;
+    margin-right: 10px;
+    background-color: #f9f9f9;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+}
+
+.delete-layer-symbol:hover {
+    opacity: 0.8;
+    color: red;
+}
+
 /* 图层管理控件样式 */
 #divlogs {
     position: absolute;
@@ -733,7 +818,7 @@ onMounted(() => {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 10px;
     border-radius: 5%;
-    cursor: move;
+    /* cursor: move; */
     /* 可拖动的光标样式 */
     z-index: 10;
 }
@@ -748,7 +833,7 @@ onMounted(() => {
     border-radius: 7px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 10px;
-    cursor: move;
+    /* cursor: move; */
     /* 可拖动的光标样式 */
     z-index: 1000;
     font-size: 12px;
@@ -770,27 +855,6 @@ onMounted(() => {
     margin-left: 8px;
 }
 
-/* 图层项样式 */
-#layer-item {
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    /* 设置垂直居中 */
-    justify-content: space-between;
-    /* 设置内容两端对齐 */
-    height: 40px;
-    /* 设置固定的高度，可以根据实际需要调整 */
-}
-
-.delete-layer-symbol {
-    float: right;
-    margin-right: 10px;
-    background-color: #f9f9f9;
-    border: none;
-    cursor: pointer;
-}
-
-
 
 #layerControl-div {
     position: fixed;
@@ -805,17 +869,6 @@ onMounted(() => {
     flex-direction: column;
     background-color: #f9f9f9;
     z-index: 15;
-}
-
-.button-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-.button-group>.my-button {
-    flex: 1 0 30%;
-    margin: 5px;
 }
 
 .custom-row {
@@ -837,16 +890,65 @@ onMounted(() => {
     color: rgb(64, 158, 255);
 }
 
-.ml {
-    margin-left: 7px;
+/* 图层管理 */
+.overlay-item {
+    list-style-type: none;
+    background-color: #f9f9f9;
 }
 
-.layerbtn {
-    position: relative;
-    float: right;
+.overlay-item:hover {
+    opacity: 0.9;
+}
+
+/* 添加样式以控制折叠效果 */
+.collapse {
+    display: none;
+}
+
+.layer-name {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0;
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.layer-svg {
+    left: 0;
+    height: 13px;
+    stroke-width: 10px;
+}
+
+.center-title {
     display: flex;
+    justify-content: center;
     align-items: center;
-    flex-direction: row;
+    height: 100%;
 }
 
+.no-padding {
+    padding: 0;
+    margin-top: 0;
+}
+
+.icon-big {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    color: black;
+    right: 50%;
+    top: 50%;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+/* 动画效果 */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>
+  

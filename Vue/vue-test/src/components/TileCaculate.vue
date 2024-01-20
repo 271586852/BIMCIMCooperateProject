@@ -1,4 +1,7 @@
-<!-- 该文件主要用于计算坐标所对应的.terrain信息 -->
+ <!--
+ * @FileDescription: 计算坐标所对应的.terrain信息
+ * @LastEditTime: 1.20
+ -->
 <template>
     <div class="info-div " v-if="showInfo">
         <h3>Terrain瓦片顶点相对坐标</h3>
@@ -88,6 +91,8 @@ const decodeTerrain = () => {
             console.error('无法读取或解码 .terrain 文件:', error);
         });
 };
+
+decodeTerrain();
 
 // 定义zigzag解码函数
 const zigzagDecode = (value) => {
@@ -216,35 +221,35 @@ const decodeTerrainArray = async (urlArray) => {
  * 根据瓦片范围反算出顶点的经纬度坐标
  * @param decodedData 
  */
-// const calculateVerticesCoordinates = (decodedData) => {
-    // const centerX = decodedData.header.centerX;
-    // const centerY = decodedData.header.centerY; // 中心点 Y 坐标
-    // const centerZ = decodedData.header.centerZ; // 中心点 Z 坐标
+const calculateVerticesCoordinates = (decodedData) => {
+    const centerX = decodedData.header.centerX;
+    const centerY = decodedData.header.centerY; // 中心点 Y 坐标
+    const centerZ = decodedData.header.centerZ; // 中心点 Z 坐标
     
-//     const boundingSphereRadius = decodedData.header.boundingSphereRadius; // 包围球半径
-//     const maxHeight = decodedData.header.maxHeight; // 最大高度
-//     const minHeight = decodedData.header.minHeight; // 最小高度
-//     const minx
-//     const maxx
-//     const miny
-//     const maxy
-//     const coordinates: any[] = [];
-//     const vertexCount = decodedData.vertexData.length / 3
+    const boundingSphereRadius = decodedData.header.boundingSphereRadius; // 包围球半径
+    const maxHeight = decodedData.header.maxHeight; // 最大高度
+    const minHeight = decodedData.header.minHeight; // 最小高度
+    const minX = 0;
+    const maxX = 2 * centerX;
+    const minY = 0;
+    const maxY = 2 * centerY;
+    const coordinates: any[] = [];
+    const vertexCount = decodedData.vertexData.length / 3
 
-//     for (let i = 0; i < vertexCount; i++) {
-//         const xRelative = minx + (decodedData.vertexData[i] / 32767) / (maxx - minx);
-//         const yRelative = miny + (decodedData.vertexData[i + vertexCount] / 32767) * (maxy - miny);
-//         const zRelative = minHeight + (decodedData.vertexData[i + 2 * vertexCount] / 32767) * (maxHeight - maxHeight);
+    for (let i = 0; i < vertexCount; i++) {
+        const xRelative = minX + (decodedData.vertexData[i] / 32767) / (maxX - minX);
+        const yRelative = minY + (decodedData.vertexData[i + vertexCount] / 32767) * (maxY - minY);
+        const zRelative = minHeight + (decodedData.vertexData[i + 2 * vertexCount] / 32767) * (maxHeight - maxHeight);
 
-//         const longitude = xRelative * boundingSphereRadius;
-//         const latitude = yRelative * boundingSphereRadius;
-//         const height = zRelative * (maxHeight - minHeight);
+        const longitude = xRelative * boundingSphereRadius;
+        const latitude = yRelative * boundingSphereRadius;
+        const height = zRelative * (maxHeight - minHeight);
 
-//         coordinates.push({ longitude, latitude, height });
-//     }
+        coordinates.push({ longitude, latitude, height });
+    }
 
-//     return coordinates;
-// }
+    return coordinates;
+}
 
 
 /**
@@ -685,7 +690,7 @@ const calculateMaxRectangle = (objects) => {
 
     // 遍历对象数组以找到最大和最小的经纬度值
     for (const obj of objects) {
-        const [longitude, latitude] = obj;
+        const [longitude, latitude] = obj; // 将一个包含经度和纬度的对象 obj 解构出来，并分别赋值给变量 longitude 和 latitude
         // 更新最小经度
         if (longitude < minLongitude) {
             minLongitude = longitude;

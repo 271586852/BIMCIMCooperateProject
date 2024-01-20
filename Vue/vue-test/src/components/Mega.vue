@@ -1,3 +1,8 @@
+ <!--
+ * @FileDescription: MegaEarth API入口，包括其初始化与事件监听
+ * @LastEditTime: 1.20
+ -->
+
 <template>
   <div>
     <div id="player"></div>
@@ -203,8 +208,9 @@ api.onEvent(e => {
 
 //初始相机位置
 const cameraoptions = {
-  position: [114.03568267822266, 22.541633507784642, 350],
-  rotation: [80, -45, 0]
+  position: [113.93459766477913, 22.534751665954364, 300],
+  rotation: [80, -45, 0],
+  flytime: 3,//设置飞行时间
 };
 //设置初始相机位置
 api.camera

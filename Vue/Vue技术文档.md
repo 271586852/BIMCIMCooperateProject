@@ -32,6 +32,10 @@ src
 ├─ components
 │    ├─ Cim.vue //选项式MegaEarth实现（暂不维护）
 │    ├─ Mega.vue //组合式MegaEarth实现，包含一些功能的实现
+│    ├─ LayerManager.vue //图层管理（显示、隐藏、删除）
+│    ├─ PageControls.vue //页面内控件（面积、测量、画框）
+│    ├─ TileCaculate.vue //.terrain解求
+│    ├─ Mega.vue //组合式MegaEarth实现，包含一些功能的实现
 │    └─ TopNavigation.vue //页面顶部菜单栏
 ├─ main.js //应用的入口文件，含初始化应用的代码，例如引入 Vue、Vuex 、ElementPlus等
 ├─ router //路由配置文件
@@ -108,3 +112,5 @@ src
 2024.1.15 新增画框与 terrain
 
 2024.1.17 将页面控件封装为组件
+
+2024.1.20 将图层管理封装为组件，并完善图层显示、隐藏、删除等操作，后续会加入增图层

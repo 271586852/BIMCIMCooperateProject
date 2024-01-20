@@ -19,6 +19,9 @@ export default createStore({
         LoadMega: false,
         vuexUrl: "localhost:4000", // localhost:4000
         vuexWsPort: "2333",// 2333
+
+        // 图层管理展开状态
+        LayerControlVisible: false,
     },
 
     //使用以下方法调用
@@ -71,6 +74,10 @@ export default createStore({
         },
         updateLoadMega(state, data) {
             state.loadMega = data;
+        },
+        // 图层中心
+        updateLayerControlVisible(state, data) {
+            state.LayerControlVisible = data;
         },
     },
     //异步调用

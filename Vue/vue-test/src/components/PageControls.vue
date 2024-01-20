@@ -1,4 +1,8 @@
-<!-- 该文件为页面右侧的控件实现，以及其开启关闭方法 -->
+
+ <!--
+ * @FileDescription: 该文件为页面右侧的控件实现，以及其开启关闭方法
+ * @LastEditTime: 1.17
+ -->
 <template>
     <div class="view-right">
         <i class="iconfont icon-mianji icon-right" @click="areaIconClick" @contextmenu.prevent="stopMeasure" title="测面积" />
