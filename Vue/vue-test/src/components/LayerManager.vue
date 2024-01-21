@@ -46,16 +46,7 @@
     </div>
 
     <!-- 添加3DTiles数据集窗口 -->
-    <div class="add-layer" id="add-dataset-window" style="display: none;">
-        <h4 style="text-align: center;">添加3DTiles数据集</h4>
-        <el-input v-model="input1" id="dataset-name" placeholder="输入图层名称" clearable />
-        <el-input v-model="input2" id="dataset-url" placeholder="输入图层URL" clearable style="margin-top:5px" />
-        <div class="button-container">
-            <el-button round
-                @click="add3DTiles(document.getElementById('dataset-name').value, document.getElementById('dataset-url').value)"
-                style="margin-top:5px">确定</el-button>
-        </div>
-    </div>
+    
 
     <!-- 添加label窗口 -->
     <div class="add-layer" id="labelWindow" style="display: none;">
@@ -181,6 +172,7 @@ import { useStore } from 'vuex';
 import {
     Menu as IconMenu,
 } from "@element-plus/icons-vue";
+import
 
 // 使用 defineProps 定义接收的父组件的方法作为 props
 const props = defineProps({
