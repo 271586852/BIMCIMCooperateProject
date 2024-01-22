@@ -404,11 +404,12 @@ const layersTest = ref(
         }
     ]
 );
-const layers = ref([])
 
+const layers = ref([])
+const entityTree = ref()
 onMounted(async () => {
-    const entityTree = await props.api.entityTree.get();
-    layers.value = entityTree.map(layer => ({
+    entityTree.value = await props.api.entityTree.get();
+    layers.value = entityTree.value.map(layer => ({
         ...layer,
         visible: layer.visible, // 假设所有图层默认可见
         overlays: [] // 将用于存储overlay的数组
@@ -416,6 +417,17 @@ onMounted(async () => {
     console.log('图层数据输出：', layers.value);
     await loadOverlays();
 });
+
+//监测实体树变化（一有新图层加入即刷新，使图层管理添加新图层）
+watch(entityTree, async () => {
+    entityTree.value = await props.api.entityTree.get();
+    layers.value = entityTree.value.map(layer => ({
+        ...layer,
+        visible: layer.visible, // 假设所有图层默认可见
+        overlays: [] // 将用于存储overlay的数组
+    }));
+    await loadOverlays();
+})
 
 /**
  * 加载图层的overlay
@@ -670,10 +682,10 @@ function closeDragElement() {
     padding: 10px;
     cursor: move;
     /* 可拖动的光标样式 */
-    /* z-index: 1000; */
-/* } */ 
+/* z-index: 1000; */
+/* } */
 .add-layer {
-    width: 200px;
+    width: 300px;
     position: absolute;
     left: 10px;
     top: 40px;
@@ -685,7 +697,7 @@ function closeDragElement() {
     /* cursor: move; */
     /* 可拖动的光标样式 */
     z-index: 1000;
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.5;
     /* 增加行距 */
 }
@@ -793,11 +805,14 @@ function closeDragElement() {
 }
 
 /* 动画效果 */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s;
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
 }
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>
   

@@ -1,12 +1,12 @@
 <template>
     <!-- 添加3DTiles数据集窗口 -->
     <div class="add-layer" id="add-dataset-window" style="display: none;">
-        <h4 style="text-align: center;">添加3DTiles数据集</h4>
+        <h2 style="text-align: center;">添加3DTiles数据集</h2>
         <el-input v-model="LayerNameInput" id="dataset-name" placeholder="输入图层名称" clearable />
         <el-input v-model="UrlInput" id="dataset-url" placeholder="输入图层URL" clearable style="margin-top:5px" />
 
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h4 style="text-align: center;">Headers</h4>
+            <h3 style="text-align: center;">Headers</h3>
             <el-button circle @click="addHeader" style="margin-top:5px" :icon="Plus" size="small"></el-button>
         </div>
         <div v-for="(header, index) in headers" :key="index" style="display: flex; justify-content: space-between;">

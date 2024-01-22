@@ -1,4 +1,5 @@
 <template>
+    //label窗口
     <div class="add-layer" id="labelWindow" style="display: none;">
         <div class="labelbtn">
             <i class="el-icon el-notification__closeBtn" @click="closeLabelWindow('labelWindow')" @mouseover="hover = true"
@@ -9,21 +10,19 @@
                 </svg>
             </i>
         </div>
-        <h4 style="text-align: center;">添加Label</h4>
+        <h2 style="text-align: center;">添加Label</h2>
         <div>
             <label for="labelName">组件名称:</label>
             <el-input type="text" size="small" v-model="labelName" placeholder="输入组件名称" />
         </div>
-        <div>
-            <label for="longitude">经度:</label>
+
+        <div style="display: flex; justify-content: space-between;">
+            <label for="longitude">位置:</label>
+            <el-button type="primary" :icon="Aim" circle color="rgb(0,0,0)" @click="AimPosition" />
+        </div>
+        <div style="display: flex; justify-content: space-between;">
             <el-input type="number" size="small" v-model="longitude" step="0.000001" placeholder="输入经度" />
-        </div>
-        <div>
-            <label for="latitude">纬度:</label>
             <el-input type="number" size="small" v-model="latitude" step="0.000001" placeholder="输入纬度" />
-        </div>
-        <div>
-            <label for="elevation">高程:</label>
             <el-input type="number" v-model="elevation" step="0.01" placeholder="输入高程" size="small" />
         </div>
         <div>
@@ -32,45 +31,47 @@
         </div>
         <div>
             <label for="anchorX">锚点X:</label>
-            <el-input type="number" v-model="anchorX" step="0.1" value="0.5" size="small" />
+            <el-input type="number" v-model="anchorX" step="0.1" size="small" />
         </div>
         <div>
             <label for="anchorY">锚点Y:</label>
-            <el-input type="number" v-model="anchorY" step="0.1" value="1" size="small" />
+            <el-input type="number" v-model="anchorY" step="0.1" size="small" />
         </div>
         <div>
             <label for="offsetX">偏移量X:</label>
-            <el-input type="number" v-model="offsetX" step="0.1" value="0" size="small" />
+            <el-input type="number" v-model="offsetX" step="0.1" size="small" />
         </div>
         <div>
             <label for="offsetY">偏移量Y:</label>
-            <el-input type="number" v-model="offsetY" step="0.1" value="0" size="small" />
+            <el-input type="number" v-model="offsetY" step="0.1" size="small" />
         </div>
         <div>
             <label for="minRange">可视范围最小值:</label>
-            <el-input type="number" v-model="minRange" step="100" value="0" size="small" />
+            <el-input type="number" v-model="minRange" step="100" size="small" />
         </div>
         <div>
             <label for="maxRange">可视范围最大值:</label>
-            <el-input type="number" v-model="maxRange" step="100" value="30000" size="small" />
+            <el-input type="number" v-model="maxRange" step="100" size="small" />
         </div>
         <div>
             <label for="textColor">文字颜色:</label>
-            <el-input type="color" v-model="textColor" value="#ffffff" size="small" />
+            <!-- <el-input type="color" v-model="textColor"  size="small" /> -->
+            <el-color-picker v-model="textColor" color-format="rgb" />
         </div>
         <div>
             <label for="textSize">文字大小:</label>
             <!-- <el-input type="range" v-model="textSize" min="0" max="100" value="10" size="small" /> -->
-            <el-slider v-model="textSize" placement="right" :min="0" :max="100" />
+            <el-slider v-model="textSize" placement="right" :min="0" :max="100" show-input size="small" />
         </div>
         <div>
             <label for="strokeColor">描边颜色:</label>
-            <el-input type="color" v-model="strokeColor" value="#000000" size="small" />
+            <!-- <el-input type="color" v-model="strokeColor"  size="small" /> -->
+            <el-color-picker v-model="strokeColor" color-format="rgb" />
         </div>
         <div>
             <label for="strokeSize">描边大小:</label>
             <!-- <el-input type="range" v-model="strokeSize" min="0" max="100" value="1" size="small" /> -->
-            <el-slider v-model="strokeSize" placement="right" :min="0" :max="100" />
+            <el-slider v-model="strokeSize" placement="right" :min="0" :max="100" show-input size="small" />
         </div>
         <div class="button-container">
             <el-button round @click="addLabel()">确定</el-button>
@@ -79,10 +80,20 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue'
+import { defineProps, ref, computed } from 'vue'
+import { Aim } from '@element-plus/icons-vue'
+import { useStore } from "vuex";
+import {
+    ElMessage,
+    ElDrawer,
+    ElMessageBox,
+    ElNotification
+} from "element-plus";
 
-// 用户输入的数据
-const labelName = ref("");
+const hover = ref(false); //关闭按钮的hover状态
+
+// label数据
+const labelName = ref("Label");
 const longitude = ref(null);
 const latitude = ref(null);
 const elevation = ref(null);
@@ -93,12 +104,11 @@ const offsetX = ref(0);
 const offsetY = ref(0);
 const minRange = ref(0);
 const maxRange = ref(30000);
-const textColor = ref("#ffffff");
+const textColor = ref("rgb(255, 255, 255)");
 const textSize = ref(10);
-const strokeColor = ref("#000000");
+const strokeColor = ref("rgb(0, 0, 0)");
 const strokeSize = ref(1);
-// 声明响应式变量
-const hover = ref(false); //关闭按钮的hover状态
+
 
 // 引入api
 const labelProp = defineProps({
@@ -108,61 +118,114 @@ const labelProp = defineProps({
     },
 })
 
-
 /**
- * 添加labal方法
- */
-const addLabel = () => {
-    console.log(
-        document.getElementById("labelName").value,
-        document.getElementById("labelText").value
-    );
-    const Name = document.getElementById("labelName").value;
-    const Text = document.getElementById("labelText").value;
-
-    //参数设置，待修改完善
-    labelProp.api.graphic
-        .add({
-            name: Name,
-            data: {
-                location: [114.02791996306978, 22.549801373467076, 50]
-            },
-            style: {
-                text: Text,
-                anchor: [0.5, 1],
-                offset: [0, 0],
-                range: [0, 999999999],
-                textStyle: {
-                    fontSize: 10,
-                    textStrokeColor: "rgb(0, 0, 0)",
-                    color: "rgb(255, 255, 255)"
-                }
-            },
-            userData: "Label userData",
-            type: "Label"
-        })
-        .then(res => {
-            console.log("成功添加", res, res.data.id);
-            var addLayer = {
-                id: res.data.id,
-                name: Name
-            };
-            console.log("addLayer111", addLayer, addLayer.name);
-            addLayerToLayerControl(addLayer);
-        })
-        .catch(error => {
-            console.log("error", error, error.code);
-        });
-}
-
-/**
- * 关闭添加labal窗口
+ * 关闭添加label窗口
  */
 const closeLabelWindow = (WindowName) => {
     if (WindowName === "labelWindow") {
         document.getElementById("labelWindow").style.display = "none";
     }
 }
+
+//鼠标点击定位
+const store = useStore();
+const location = computed(() => store.state.location);
+const isAim = ref(false);
+
+const AimPosition = () => {
+    ElMessage("鼠标左键点击地图获取位置.");
+    isAim.value = true;
+
+    labelProp.api.onEvent(e => {
+        if (e.type === 'LeftMouseClick' && isAim.value) { // 纯鼠标事件反馈，告知系统鼠标左右键是否被点击，不携带额外信息，默认开启
+            console.log("鼠标左键点击地图获取位置", location.value)
+            longitude.value = location.value[0];
+            latitude.value = location.value[1];
+            elevation.value = location.value[2];
+            isAim.value = false;
+            ElMessage("已拾取.");
+
+        }
+    })
+
+}
+
+
+const convertToLabelFormat = () => {
+    return {
+        name: labelName.value,
+        data: {
+            location: [longitude.value, latitude.value, elevation.value]
+        },
+        style: {
+            text: labelText.value,
+            anchor: [anchorX.value, anchorY.value],
+            offset: [offsetX.value, offsetY.value],
+            range: [minRange.value, maxRange.value],
+            textStyle: {
+                fontSize: textSize.value,
+                color: textColor.value,
+                textStrokeColor: strokeColor.value,
+                strokeSize: strokeSize.value
+            }
+        },
+        type: "Label"
+    };
+}
+
+
+
+/**
+ * 添加labal方法
+ */
+const addLabel = () => {
+    const labelData = convertToLabelFormat();
+    console.log("labelData", labelData);
+
+    labelProp.api.graphic
+        .add(labelData)
+        .then(res => {
+            console.log("成功添加", res, res.data.id);
+        })
+        .catch(error => {
+            console.log("error", error, error.code);
+        });
+    //参数设置，待修改完善
+    // labelProp.api.graphic
+    //     .add({
+    //         name: Name,
+    //         data: {
+    //             location: [114.02791996306978, 22.549801373467076, 50]
+    //         },
+    //         style: {
+    //             text: Text,
+    //             anchor: [0.5, 1],
+    //             offset: [0, 0],
+    //             range: [0, 999999999],
+    //             textStyle: {
+    //                 fontSize: 10,
+    //                 textStrokeColor: "rgb(0, 0, 0)",
+    //                 color: "rgb(255, 255, 255)"
+    //             }
+    //         },
+    //         userData: "Label userData",
+    //         type: "Label"
+    //     })
+    //     .then(res => {
+    //         console.log("成功添加", res, res.data.id);
+    //         var addLayer = {
+    //             id: res.data.id,
+    //             name: Name
+    //         };
+    //         console.log("addLayer111", addLayer, addLayer.name);
+    //         addLayerToLayerControl(addLayer);
+    //     })
+    //     .catch(error => {
+    //         console.log("error", error, error.code);
+    //     });
+}
+
+
 </script>
 
 <style scoped></style>

@@ -143,16 +143,16 @@ if (api.control.enableStudioKeyFrameChanged(true))
 
 
 api.onEvent(e => {
-  //console.log("onEvent事件", e.type, e.data); // 事件类型、事件反馈结果
+  console.log("onEvent事件", e.type, e.data); // 事件类型、事件反馈结果
 
   if (e.type === "LeftMouseClick") {
     // 点击事件反馈，需要在api.control处开启点击事件
     store.commit("updateLocation", e.data.location);
 
-    console.log(e.data.entity) // entity相关
-    console.log(e.data.entity.id) // 目前仅支持Tileset数据id的查询
-    console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
-    console.log(e.data.entity.userData) // 所点击的Tileset数据所携带的userData
+    // console.log(e.data.entity) // entity相关
+    // console.log(e.data.entity.id) // 目前仅支持Tileset数据id的查询
+    //console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
+    // console.log(e.data.entity.userData) // 所点击的Tileset数据所携带的userData
   }
 
   if (e.type === "CameraChanged") {
