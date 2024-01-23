@@ -24,6 +24,7 @@
 <script setup>
 import { defineProps, ref } from 'vue'
 import { Delete, Plus } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 
 // 引入api
 const tilesProp = defineProps({
@@ -71,7 +72,7 @@ const convertHeadersToObject = (headersArray) => {
  */
 const add3DTiles = (name, url, headers) => {
     const headersObject = convertHeadersToObject(headers);
-    
+
     console.log('add3DTiles6666666666', name, url, headersObject)
 
     tilesProp.api.tileset
@@ -89,6 +90,10 @@ const add3DTiles = (name, url, headers) => {
         })
         .then(res => {
             console.log("成功添加", res, res.data.id);
+            ElMessage({
+                message: "添加成功",
+                type: "success"
+            });
             // var addLayer = {
             //     id: res.data.id,
             //     name: name,
@@ -99,8 +104,12 @@ const add3DTiles = (name, url, headers) => {
         })
         .catch(error => {
             console.log("error", error, error.code, error.message);
+            ElMessage.error("添加失败")
         });
-}
+};
+
+
+
 
 </script>
 

@@ -39,15 +39,28 @@
         <span>框选瓦片</span>
       </el-menu-item>
       <el-sub-menu index="5">
-      <template #title>
-        <el-icon><Refresh /></el-icon>
-        <span>shp转换</span>
-      </template>
-      <el-menu-item index="5-1" @click="shpTogeojson">shp转geojson</el-menu-item>
-      <el-menu-item index="5-2" @click="shpToxyz">shp转xyz</el-menu-item>
-      <el-menu-item index="5-3" @click="xyzTransform">xyz转换</el-menu-item>
-      <el-menu-item index="5-4" @click="shpEdit">shp编辑</el-menu-item>
-    </el-sub-menu>
+        <template #title>
+          <el-icon>
+            <Refresh />
+          </el-icon>
+          <span>shp转换</span>
+        </template>
+        <el-menu-item index="5-1" @click="shpTogeojson">shp转geojson</el-menu-item>
+        <el-menu-item index="5-2" @click="shpToxyz">shp转xyz</el-menu-item>
+        <el-menu-item index="5-3" @click="xyzTransform">xyz转换</el-menu-item>
+        <el-menu-item index="5-4" @click="shpEdit">shp编辑</el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="7">
+        <template #title>
+          <el-icon>
+            <OfficeBuilding />
+          </el-icon>
+          <span>BIM模型操作</span>
+        </template>
+        <el-menu-item index="7-1" @click="">修改构件</el-menu-item>
+        <el-menu-item index="7-2" @click="">查询构件</el-menu-item>
+        <el-menu-item index="7-3" @click="">删除构件</el-menu-item>
+      </el-sub-menu>
       <!-- <el-sub-menu index="4">
         <template #title>
           <el-icon>
@@ -65,13 +78,13 @@
       </el-sub-menu>-->
 
       <div class="flex-grow" />
-      <el-menu-item index="6" @click="clickUser">
+      <el-menu-item index="8" @click="clickUser">
         <el-icon>
           <User />
         </el-icon>
         <span>用户中心</span>
       </el-menu-item>
-      <el-menu-item index="7">
+      <el-menu-item index="9">
         <el-icon>
           <Tools />
         </el-icon>
@@ -160,6 +173,7 @@ import {
   Close,
   Reading,
   Refresh,
+  OfficeBuilding
 } from "@element-plus/icons-vue";
 
 let lastClicked = ref("");

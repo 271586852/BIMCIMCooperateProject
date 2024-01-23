@@ -105,8 +105,8 @@ const layers222 = [
 
 // 初始化api
 const api = new me.MegaEarthApi({
-  url: 'localhost:4000', //  客户端所在主机ip，若是本机连接可填 localhost
-  wsPort: '2333', //  选填，客户端开启的通信端口，默认为 2333
+  url: 'localhost:4001', //  客户端所在主机ip，若是本机连接可填 localhost
+  wsPort: '2334', //  选填，客户端开启的通信端口，默认为 2333
   container: "player" //  挂载视频的div ID
 });
 
@@ -129,7 +129,13 @@ api.on("close", e => {
 
 // 2.三维系统内置的交互事件监听器
 // 开启事件
-api.control.enableLeftMouseClick(true);  //开启鼠标左键点击查询
+api.control.enableLeftMouseClick(true, {
+  nodeKey: 'BEFFA684CFD3C90D0EC58CA02DDEA09E',
+  color: 'rgba(0, 124, 255, 0.8)',
+  transparent: 1,
+  isHighlight: true,
+  featureIDSetIndex: 0
+});  //开启鼠标左键点击查询
 api.control.enableCameraChanged(true);   //
 api.control.enableStudioKeyFrameChanged(true);
 if (api.control.enableLeftMouseClick(true)) {
@@ -149,10 +155,10 @@ api.onEvent(e => {
     // 点击事件反馈，需要在api.control处开启点击事件
     store.commit("updateLocation", e.data.location);
 
-    // console.log(e.data.entity) // entity相关
-    // console.log(e.data.entity.id) // 目前仅支持Tileset数据id的查询
-    //console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
-    // console.log(e.data.entity.userData) // 所点击的Tileset数据所携带的userData
+    console.log(e.data.entity) // entity相关
+    console.log(e.data.entity.id) // 目前仅支持Tileset数据id的查询
+    console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
+    console.log(e.data.entity.userData) // 所点击的Tileset数据所携带的userData
   }
 
   if (e.type === "CameraChanged") {

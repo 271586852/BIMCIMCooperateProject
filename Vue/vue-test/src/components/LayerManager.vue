@@ -24,9 +24,13 @@
                     <div id="POIWindow" style="display: none;">
                         <el-button round @click="openAddLayerWindow('labelWindow')">Label</el-button>
                         <el-button round @click="openAddLayerWindow('markerWindow')">Marker</el-button>
-                        <el-button round @click="openAddLayerWindow('wavedecalWindow')">Wave Decal</el-button>
+                        <el-button round @click="openAddLayerWindow('WaveDecalWindow')">Wave Decal</el-button>
                     </div>
-                    <el-button round @click="addPath()">添加路径</el-button>
+                    <el-button round @click="openAddLayerWindow('PathWindow')">添加路径</el-button>
+                    <div id="PathWindow" style="display: none;">
+                        <el-button round @click="openAddLayerWindow('odlineWindow')">ODLine</el-button>
+                        <el-button round @click="openAddLayerWindow('polylineWindow')">Polyline</el-button>
+                    </div>
                     <el-button round @click="addArea()">添加区域</el-button>
                 </div>
                 <div id="overlay-window">
@@ -50,6 +54,19 @@
 
     <!-- 添加label窗口 -->
     <Label :api="props.api" />
+
+    <!-- 添加marker窗口 -->
+    <Marker :api="props.api" />
+
+    <!-- 添加WaveDecal窗口 -->
+    <WaveDecal :api="props.api" />
+
+    <!-- 添加ODLine窗口 -->
+    <ODLine :api="props.api" />
+
+    <!-- 添加Polyline窗口 -->
+    <Polyline :api="props.api" />
+
 
     <!-- 图层管理模块 ---------->
 
@@ -98,6 +115,10 @@ import {
 } from "@element-plus/icons-vue"
 import Tileset from './addLayers/Tileset.vue'
 import Label from './addLayers/Label.vue'
+import Marker from './addLayers/Marker.vue'
+import WaveDecal from './addLayers/WaveDecal.vue'
+import ODLine from './addLayers/ODline.vue'
+import Polyline from './addLayers/Polyline.vue';
 
 // 使用 defineProps 定义接收的父组件的方法作为 props
 const props = defineProps({
@@ -158,9 +179,35 @@ const openAddLayerWindow = (layerWindowName) => {
             document.getElementById("labelWindow").style.display = "block";
         }
     } else if (layerWindowName === "markerWindow") {
-    } else if (layerWindowName === "wavedecalWindow") {
-    } else if (layerWindowName === "componentWindow") {
-    } else if (layerWindowName === "overlayWindow") {
+        if (document.getElementById("markerWindow").style.display === "block") {
+            document.getElementById("markerWindow").style.display = "none";
+        } else {
+            document.getElementById("markerWindow").style.display = "block";
+        }
+    } else if (layerWindowName === "WaveDecalWindow") {
+        if (document.getElementById("WaveDecalWindow").style.display === "block") {
+            document.getElementById("WaveDecalWindow").style.display = "none";
+        } else {
+            document.getElementById("WaveDecalWindow").style.display = "block";
+        }
+    } else if (layerWindowName === "PathWindow") {
+        if (document.getElementById("PathWindow").style.display === "block") {
+            document.getElementById("PathWindow").style.display = "none";
+        } else {
+            document.getElementById("PathWindow").style.display = "block";
+        }
+    } else if (layerWindowName === "odlineWindow") {
+        if (document.getElementById("odlineWindow").style.display === "block") {
+            document.getElementById("odlineWindow").style.display = "none";
+        } else {
+            document.getElementById("odlineWindow").style.display = "block";
+        }
+    } else if (layerWindowName === "polylineWindow") {
+        if (document.getElementById("polylineWindow").style.display === "block") {
+            document.getElementById("polylineWindow").style.display = "none";
+        } else {
+            document.getElementById("polylineWindow").style.display = "block";
+        }
     }
 }
 
