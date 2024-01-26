@@ -1,39 +1,40 @@
 <template>
-    <!-- Polyline窗口 -->
-    <div class="add-layer" id="polylineWindow" style="display: none;">
+    <!-- Wall窗口 -->
+    <div class="add-layer" id="wallWindow" style="display: none;">
         <div class="labelbtn">
-            <i class="el-icon el-notification__closeBtn" @click="closePolylineWindow('polylineWindow')"
-                @mouseover="hover = true" @mouseleave="hover = false">
+            <i class="el-icon el-notification__closeBtn" @click="closeWallWindow('wallWindow')" @mouseover="hover = true"
+                @mouseleave="hover = false">
                 <svg data-v-5f73bff2 viewBox="0 0 1024 1024" :class="{ 'hovered': hover }">
                     <path data-v-5f73bff2 fill="currentColor"
                         d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z" />
                 </svg>
             </i>
         </div>
-        <h2 style="text-align: center;">添加Polyline</h2>
+        <h2 style="text-align: center;">添加Wall</h2>
         <div>
             <label>组件名称:</label>
-            <el-input type="text"  v-model="PolylineName" placeholder="输入组件名称" />
+            <el-input type="text" v-model="WallName" placeholder="输入组件名称" />
         </div>
         <div>
             <label>geojson:</label>
-            <el-button  @click="OpenFile">选择文件</el-button>
-            <el-input type="textarea"  :autosize="{ minRows: 5, maxRows: 12 }" v-model="geojson"  placeholder="请输入geojson或者输入geojson的线上地址" />
+            <el-button @click="OpenFile">选择文件</el-button>
+            <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 12 }" v-model="geojson"
+                placeholder="请输入geojson或者输入geojson的线上地址" />
         </div>
         <div>
-            <label>高程:</label>
-            <el-input type="number" v-model="altitude" step="1" />
+            <label>海拔:</label>
+            <el-input type="number" v-model="elevation" step="1" placeholder="围墙下边界对应的海拔" />
         </div>
         <div>
-            <label>线宽:</label>
-            <el-input type="number" v-model="linewidth" step="0.1" />
+            <label>高度:</label>
+            <el-input type="number" v-model="height" step="0.1" placeholder="围墙高度" />
         </div>
         <div>
             <label>颜色:</label>
             <el-color-picker v-model="color" show-alpha />
         </div>
         <div class="button-container">
-            <el-button round @click="addPolyline()">确定</el-button>
+            <el-button round @click="addWall()">确定</el-button>
         </div>
     </div>
 </template>
@@ -50,17 +51,17 @@ import {
 
 const hover = ref(false); //关闭按钮的hover状态
 
-// Polyline数据
-const PolylineName = ref("Polyline");
+// wall数据
+const WallName = ref("Wall");
 const geojson = ref(``);
-const altitude = ref(100);
-const linewidth = ref(10);
+const height = ref(100);
+const elevation = ref(0);
 const color = ref('rgba(0, 235, 255, 1)');
 
 
 
 // 引入api
-const PolylineProp = defineProps({
+const WallProp = defineProps({
     api: {
         type: Object,
         required: true
@@ -69,11 +70,11 @@ const PolylineProp = defineProps({
 
 
 /**
- * 关闭添加polyline窗口
+ * 关闭添加wall窗口
  */
-const closePolylineWindow = (WindowName) => {
-    if (WindowName === "polylineWindow") {
-        document.getElementById("polylineWindow").style.display = "none";
+const closeWallWindow = (WindowName) => {
+    if (WindowName === "wallWindow") {
+        document.getElementById("wallWindow").style.display = "none";
     }
 }
 
@@ -94,7 +95,7 @@ const OpenFile = () => {
     fileInput.click();
 };
 
-const convertToPolylineFormat = () => {
+const convertToWallFormat = () => {
     let data;
     try {
         new URL(geojson.value);
@@ -108,24 +109,24 @@ const convertToPolylineFormat = () => {
     }
 
     return {
-        name: PolylineName.value,
+        name: WallName.value,
         data: data,
         style: {
-            elevation: altitude.value,
-            width: linewidth.value,
+            elevation: elevation.value,
+            height: height.value,
             color: color.value,
         },
-        type: "Polyline"
+        type: "Wall"
     };
 }
 
 /**
- * 添加Polyline
+ * 添加wall
  */
-const addPolyline = () => {
-    const polyline = convertToPolylineFormat();
-    console.log("添加Polyline", polyline);
-    PolylineProp.api.graphic.add(polyline).then(res => {
+const addWall = () => {
+    const wall = convertToWallFormat();
+    console.log("添加Walls", wall);
+    WallProp.api.graphic.add(wall).then(res => {
         console.log("成功添加", res, res.data.id);
         ElMessage({
             message: "添加成功",

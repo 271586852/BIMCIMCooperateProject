@@ -105,8 +105,8 @@ const layers222 = [
 
 // 初始化api
 const api = new me.MegaEarthApi({
-  url: 'localhost:4001', //  客户端所在主机ip，若是本机连接可填 localhost
-  wsPort: '2334', //  选填，客户端开启的通信端口，默认为 2333
+  url: 'localhost:4000', //  客户端所在主机ip，若是本机连接可填 localhost
+  wsPort: '2333', //  选填，客户端开启的通信端口，默认为 2333
   container: "player" //  挂载视频的div ID
 });
 

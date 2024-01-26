@@ -31,7 +31,12 @@
                         <el-button round @click="openAddLayerWindow('odlineWindow')">ODLine</el-button>
                         <el-button round @click="openAddLayerWindow('polylineWindow')">Polyline</el-button>
                     </div>
-                    <el-button round @click="addArea()">添加区域</el-button>
+                    <el-button round @click="openAddLayerWindow('AreaWindow')">添加区域</el-button>
+                    <div id="AreaWindow" style="display: none;">
+                        <el-button round @click="openAddLayerWindow('wallWindow')">Wall</el-button>
+                        <el-button round @click="openAddLayerWindow('GeometryDecalWindow')">GeometryDecal</el-button>
+                        <el-button round @click="openAddLayerWindow('TextureDecalWindow')">TextureDecal</el-button>
+                    </div>
                 </div>
                 <div id="overlay-window">
                     <h4>添加叠加图层</h4>
@@ -67,6 +72,14 @@
     <!-- 添加Polyline窗口 -->
     <Polyline :api="props.api" />
 
+    <!-- 添加Walls窗口 -->
+    <Wall :api="props.api" />
+    
+    <!-- 添加GeometryDecal窗口 -->
+    <GeometryDecal :api="props.api" />
+
+    <!-- 添加TextureDecal窗口 -->
+    <TextureDecal :api="props.api" />
 
     <!-- 图层管理模块 ---------->
 
@@ -119,6 +132,9 @@ import Marker from './addLayers/Marker.vue'
 import WaveDecal from './addLayers/WaveDecal.vue'
 import ODLine from './addLayers/ODline.vue'
 import Polyline from './addLayers/Polyline.vue';
+import Wall from './addLayers/Wall.vue';
+import GeometryDecal from './addLayers/GeometryDecal.vue';
+import TextureDecal from './addLayers/TextureDecal.vue';
 
 // 使用 defineProps 定义接收的父组件的方法作为 props
 const props = defineProps({
@@ -190,7 +206,8 @@ const openAddLayerWindow = (layerWindowName) => {
         } else {
             document.getElementById("WaveDecalWindow").style.display = "block";
         }
-    } else if (layerWindowName === "PathWindow") {
+    }
+    if (layerWindowName === "PathWindow") {
         if (document.getElementById("PathWindow").style.display === "block") {
             document.getElementById("PathWindow").style.display = "none";
         } else {
@@ -209,6 +226,36 @@ const openAddLayerWindow = (layerWindowName) => {
             document.getElementById("polylineWindow").style.display = "block";
         }
     }
+
+    if (layerWindowName === "AreaWindow") {
+        if (document.getElementById("AreaWindow").style.display === "block") {
+            document.getElementById("AreaWindow").style.display = "none";
+        } else {
+            document.getElementById("AreaWindow").style.display = "block";
+        }
+    } else if (layerWindowName === "wallWindow"){
+         if (document.getElementById("wallWindow").style.display === "block") {
+            document.getElementById("wallWindow").style.display = "none";
+        } else {
+            document.getElementById("wallWindow").style.display = "block";
+        }
+    } else if (layerWindowName === "GeometryDecalWindow"){
+        if (document.getElementById("GeometryDecalWindow").style.display === "block") {
+            document.getElementById("GeometryDecalWindow").style.display = "none";
+        } else {
+            document.getElementById("GeometryDecalWindow").style.display = "block";
+        }
+    } else if (layerWindowName === "TextureDecalWindow") {
+        if (document.getElementById("TextureDecalWindow").style.display === "block") {
+            document.getElementById("TextureDecalWindow").style.display = "none";
+        } else {
+            document.getElementById("TextureDecalWindow").style.display = "block";
+        }
+    }
+    
+
+
+
 }
 
 
