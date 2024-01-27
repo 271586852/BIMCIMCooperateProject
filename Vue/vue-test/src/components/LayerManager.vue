@@ -178,9 +178,6 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useStore } from 'vuex';
-import {
-    Menu as IconMenu,
-} from "@element-plus/icons-vue";
 
 // 使用 defineProps 定义接收的父组件的方法作为 props
 const props = defineProps({
@@ -562,7 +559,7 @@ onMounted(async () => {
     const entityTree = await props.api.entityTree.get();
     layers.value = entityTree.map(layer => ({
         ...layer,
-        visible: layer.visible, // 假设所有图层默认可见
+        visible: layer.visible, 
         overlays: [] // 将用于存储overlay的数组
     }));
     console.log('图层数据输出：', layers.value);
