@@ -13,6 +13,9 @@
     <!-- 右侧小图标 -->
     <PageControls ref="ref_inside" :api="api" />
 
+    <!-- bim模型操作按钮 -->
+    <BimControl :api="api" />
+
   </div>
 </template>
 
@@ -20,6 +23,7 @@
 // 引入子组件
 import PageControls from "./PageControls.vue";
 import LayerManager from "./LayerManager.vue";
+import BimControl from "./BimControl.vue";
 
 import { onMounted, ref, watch, computed } from "vue";
 import { useStore } from "vuex";
@@ -130,7 +134,7 @@ api.on("close", e => {
 // 2.三维系统内置的交互事件监听器
 // 开启事件
 api.control.enableLeftMouseClick(true, {
-  nodeKey: 'BEFFA684CFD3C90D0EC58CA02DDEA09E',
+  nodeKey: 'id',
   color: 'rgba(0, 124, 255, 0.8)',
   transparent: 1,
   isHighlight: true,
@@ -214,8 +218,8 @@ api.onEvent(e => {
 
 //初始相机位置
 const cameraoptions = {
-  position: [113.93459766477913, 22.534751665954364, 300],
-  rotation: [80, -45, 0],
+  position: [116.43159920000855, 39.90999999999742, 100],
+  rotation: [80, -10, 0],
   flytime: 3,//设置飞行时间
 };
 //设置初始相机位置

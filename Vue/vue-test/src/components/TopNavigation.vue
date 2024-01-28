@@ -50,17 +50,14 @@
         <el-menu-item index="5-3" @click="xyzTransform">xyz转换</el-menu-item>
         <el-menu-item index="5-4" @click="shpEdit">shp编辑</el-menu-item>
       </el-sub-menu>
-      <el-sub-menu index="7">
-        <template #title>
+      <el-menu-item index="7" @click="showbim">
+        <el-icon>
           <el-icon>
-            <OfficeBuilding />
+            <Reading />
           </el-icon>
-          <span>BIM模型操作</span>
-        </template>
-        <el-menu-item index="7-1" @click="">修改构件</el-menu-item>
-        <el-menu-item index="7-2" @click="">查询构件</el-menu-item>
-        <el-menu-item index="7-3" @click="">删除构件</el-menu-item>
-      </el-sub-menu>
+        </el-icon>
+        <span>BIM模型操作</span>
+      </el-menu-item>
       <!-- <el-sub-menu index="4">
         <template #title>
           <el-icon>
@@ -153,6 +150,7 @@
 // 引入组件
 import TileCaculate from "./TileCaculate.vue";
 import axios from 'axios';
+import { useBimStore } from "../store/bim";
 
 import { reactive, ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import {
@@ -175,6 +173,7 @@ import {
   Refresh,
   OfficeBuilding
 } from "@element-plus/icons-vue";
+import { storeToRefs } from "pinia";
 
 let lastClicked = ref("");
 const activeIndex = ref("");
@@ -561,6 +560,15 @@ const selectObject = object => {
 };
 
 //---暴露数据
+
+
+// bim模型按钮相关
+const Bimstore = useBimStore()
+const { isBim } = storeToRefs(Bimstore)
+const showbim = () => {
+  Bimstore.changeisBim()
+  console.log("isbim状态",isBim.value)
+}
 
 
 </script>

@@ -3,8 +3,10 @@
     <div class="add-layer" id="add-dataset-window" style="display: none;">
         <h2 style="text-align: center;">添加3DTiles数据集</h2>
         <el-input v-model="LayerNameInput" id="dataset-name" placeholder="输入图层名称" clearable />
-        <el-input v-model="UrlInput" id="dataset-url" placeholder="输入图层URL" clearable style="margin-top:5px" />
-
+        <el-input v-model="layerUrl" id="dataset-url" placeholder="输入图层URL" clearable style="margin-top:5px" />
+        <p>加入bim建筑模型时填写:</p>
+        <el-input v-model="clientId" placeholder="输入clientId" clearable />
+        <el-input v-model="clientSecret" placeholder="输入clientSecret" clearable style="margin-top:5px" />
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3 style="text-align: center;">Headers</h3>
             <el-button circle @click="addHeader" style="margin-top:5px" :icon="Plus" size="small"></el-button>
@@ -16,7 +18,7 @@
         </div>
 
         <div class="button-container" style="display: flex; justify-content: center;">
-            <el-button round @click="add3DTiles(LayerNameInput, UrlInput, headers)" style="margin-top:5px">确定</el-button>
+            <el-button round @click="add3DTiles(LayerNameInput, layerUrl, headers)" style="margin-top:5px">确定</el-button>
         </div>
     </div>
 </template>
@@ -25,6 +27,8 @@
 import { defineProps, ref } from 'vue'
 import { Delete, Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { useBimStore } from '../../store/bim';
+import { storeToRefs } from 'pinia';
 
 // 引入api
 const tilesProp = defineProps({
@@ -34,13 +38,17 @@ const tilesProp = defineProps({
     },
 })
 
+const Bimstore = useBimStore()
+const { clientId, clientSecret, layerUrl, BeareraccessToken } = storeToRefs(Bimstore)
+
+
+
 //用户输入的数据
 const headers = ref([])
 const LayerNameInput = ref("");
-const UrlInput = ref("");
+// const UrlInput = ref("");
 
-const name = 'test'
-const url = 'https://cloud.dev.pkpm.cn/bimserver/viewing/v3/datas/234lfT3Ld2kA3H3rvX4TaM8j/axis.json'
+
 
 //添加header
 const addHeader = () => {
@@ -60,6 +68,9 @@ const convertHeadersToObject = (headersArray) => {
     const headersObject = {};
     headersArray.forEach(header => {
         headersObject[header.key] = header.value;
+        if(header.key === 'Authorization') {
+            BeareraccessToken.value = header.value
+        }
     });
     return headersObject;
 }
@@ -94,13 +105,17 @@ const add3DTiles = (name, url, headers) => {
                 message: "添加成功",
                 type: "success"
             });
-            // var addLayer = {
-            //     id: res.data.id,
-            //     name: name,
-            //     url: url,
-            //     visible: true
-            // };
-            // addLayerToLayerControl(addLayer);
+            // 更新 Bimstore 中的值
+            Bimstore.clientId = clientId;
+            Bimstore.clientSecret = clientSecret;
+            Bimstore.layerUrl = layerUrl;
+            Bimstore.BeareraccessToken = BeareraccessToken;
+
+            // 将值存储到 localStorage 中（防止刷新页面后数据丢失）
+            localStorage.setItem('clientId', clientId.value);
+            localStorage.setItem('clientSecret', clientSecret.value);
+            localStorage.setItem('layerUrl', layerUrl.value);
+            localStorage.setItem('BeareraccessToken', BeareraccessToken.value);
         })
         .catch(error => {
             console.log("error", error, error.code, error.message);
