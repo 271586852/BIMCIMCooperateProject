@@ -22,6 +22,11 @@ export default createStore({
 
         // 图层管理展开状态
         LayerControlVisible: false,
+
+        //上传tif
+        UploadDivVisible:false,
+        // 传递json
+        JSONData: [false],
     },
 
     //使用以下方法调用
@@ -78,6 +83,14 @@ export default createStore({
         // 图层中心
         updateLayerControlVisible(state, data) {
             state.LayerControlVisible = data;
+        },
+        //上传tif
+        updateUploadDivVisible(state, data) {
+            state.UploadDivVisible = data;
+        },
+        // 传递json
+        updateJSONData(state, data) {
+            state.JSONData = data;
         },
     },
     //异步调用

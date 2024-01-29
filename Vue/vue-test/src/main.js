@@ -10,6 +10,8 @@ import './assets/iconfont.css'    // 引入阿里云字体图标css
 import { createPinia } from 'pinia'
 // import axios from 'axios'
 
+
+
 const pinia = createPinia()
 const app = createApp(App)
 

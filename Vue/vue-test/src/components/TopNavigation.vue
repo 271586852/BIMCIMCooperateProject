@@ -30,6 +30,12 @@
         </el-icon>
         <span>瓦片管理</span>
       </el-menu-item>
+      <el-menu-item index="8" @click="showUpload">
+        <el-icon>
+          <i class="iconfont icon-tuceng" />
+        </el-icon>
+        <span>上传瓦片</span>
+      </el-menu-item>
       <el-menu-item index="4" @click="showTerrainInfo">
         <el-icon>
           <el-icon>
@@ -137,6 +143,9 @@
 
     <!-- 计算框选区域瓦片信息 -->
     <TileCaculate style="float: right;" ref="refTile" />
+    
+    <!-- 上传tif -->
+    <TopDiv />
 
 
 
@@ -149,6 +158,7 @@
 <script lang="ts" setup>
 // 引入组件
 import TileCaculate from "./TileCaculate.vue";
+import TopDiv from "./TopDiv.vue";
 import axios from 'axios';
 import { useBimStore } from "../store/bim";
 
@@ -257,6 +267,7 @@ const vuexUrl = computed(() => store.state.vuexUrl);
 const vuexWsPort = computed(() => store.state.vuexWsPort);
 const userVisible = computed(() => store.state.userVisible); // 用户信息窗口
 const LayerControlVisible = computed(() => store.state.LayerControlVisible); // 图层控制窗口
+const uploadDivVisible = computed(() => store.state.UploadDivVisible); // 上传tif
 
 console.log("vuexUrl: ", vuexUrl.value);
 console.log("vuexWsPort: ", vuexWsPort.value);
@@ -290,6 +301,11 @@ const showTerrainInfo = () => {
   // });
   // refTile.value.calculateTilesForLevels();
   refTile.value.showInfoFunction();
+}
+
+// 显示上传瓦片
+const showUpload =()=>{
+  store.commit("updateUploadDivVisible",!uploadDivVisible.value);
 }
 
 // const gridData = computed(() => store.state.gridData);

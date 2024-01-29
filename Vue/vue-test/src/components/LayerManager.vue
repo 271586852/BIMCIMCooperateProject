@@ -505,7 +505,7 @@ onMounted(async () => {
     entityTree.value = await props.api.entityTree.get();
     layers.value = entityTree.value.map(layer => ({
         ...layer,
-        visible: layer.visible, // 假设所有图层默认可见
+        visible: layer.visible, 
         overlays: [] // 将用于存储overlay的数组
     }));
     console.log('图层数据输出：', layers.value);

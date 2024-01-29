@@ -4,7 +4,7 @@
  -->
 
 <template>
-  <div>
+  <div id="container">
     <div id="player"></div>
 
     <!-- 图层控件 -->
