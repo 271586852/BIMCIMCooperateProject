@@ -74,7 +74,7 @@
 
     <!-- 添加Walls窗口 -->
     <Wall :api="props.api" />
-    
+
     <!-- 添加GeometryDecal窗口 -->
     <GeometryDecal :api="props.api" />
 
@@ -94,7 +94,7 @@
                     <li class="layer-item" :id="layer.id" :key="layer.id">
                         <el-checkbox type="checkbox" :id="layer.name" v-model="layer.visible"
                             @change="toggleLayerVisibility(layer)" />
-                        <span class="layer-name" @click="toggleCollapse(layer.id)" :for="layer.name">
+                        <span class="layer-name" @click="toggleCollapse(layer.id)" :for="layer.name" @dblclick="flyToLayer(layer.id)">
                             <svg v-if="layer.overlays.length > 0" class="layer-svg" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 1024 1024" data-v-ea893728=""
                                 :style="{ 'transform': isCollapsed[layer.id] ? 'rotate(0deg)' : 'rotate(90deg)', 'transition': 'transform 0.3s' }">
@@ -108,7 +108,7 @@
                                 style="margin-left: 20px;">
                                 <el-checkbox type="checkbox" :id="overlay.name" v-model="overlay.visible"
                                     @change="toggleOverlayVisibility(layer.id, overlay)" />
-                                <span class="layer-name" :for="overlay.name">{{ overlay.name }}</span>
+                                <span class="layer-name" :for="overlay.name" @dblclick="flyToLayer(layer.id)" >{{ overlay.name }}</span>
                                 <el-button class="delete-layer-symbol button" @click="deleteOverlay(layer.id, overlay.id)"
                                     text>Delete</el-button>
                             </li>
@@ -233,13 +233,13 @@ const openAddLayerWindow = (layerWindowName) => {
         } else {
             document.getElementById("AreaWindow").style.display = "block";
         }
-    } else if (layerWindowName === "wallWindow"){
-         if (document.getElementById("wallWindow").style.display === "block") {
+    } else if (layerWindowName === "wallWindow") {
+        if (document.getElementById("wallWindow").style.display === "block") {
             document.getElementById("wallWindow").style.display = "none";
         } else {
             document.getElementById("wallWindow").style.display = "block";
         }
-    } else if (layerWindowName === "GeometryDecalWindow"){
+    } else if (layerWindowName === "GeometryDecalWindow") {
         if (document.getElementById("GeometryDecalWindow").style.display === "block") {
             document.getElementById("GeometryDecalWindow").style.display = "none";
         } else {
@@ -252,7 +252,7 @@ const openAddLayerWindow = (layerWindowName) => {
             document.getElementById("TextureDecalWindow").style.display = "block";
         }
     }
-    
+
 
 
 
@@ -505,7 +505,7 @@ onMounted(async () => {
     entityTree.value = await props.api.entityTree.get();
     layers.value = entityTree.value.map(layer => ({
         ...layer,
-        visible: layer.visible, 
+        visible: layer.visible,
         overlays: [] // 将用于存储overlay的数组
     }));
     console.log('图层数据输出：', layers.value);
@@ -535,6 +535,23 @@ async function loadOverlays() {
         }));
     }
 }
+
+// ---图层控件-----------------------------
+
+/**
+ * 自动定位到该对象合适的观察距离
+ * @param {*} layerId 传入图层id
+ */
+const flyToLayer = (layerId) => {
+    let options = {
+        id: layerId,
+        rotation: [80, -45, 0],
+        distance: 100
+    }
+    props.api.camera.flyTo(options)
+    console.log('执行flyToLayer');
+}
+
 
 /**
  * 改变图层的显示

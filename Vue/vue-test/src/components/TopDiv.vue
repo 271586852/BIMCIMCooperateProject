@@ -25,16 +25,35 @@ const store = useStore();
 
 // 仓库数据
 const uploadDivVisible = computed(() => store.state.UploadDivVisible); // 上传tif
-const JSONData = computed(() => store.state.JSONData); // 获取JSON数据
-console.log('输出JSON：', JSONData.value);
+// const JSONData = computed(() => store.state.JSONData); // 获取JSON数据
+// 将 Vuex 中的 JSONData 映射到本地响应式数据，并进行序列化
+const jsonData = ref(JSON.stringify(store.state.JSONData));
+
+// 使用 watch 监听 jsonData 的变化，并在变化时输出日志
+watch(jsonData, (newValue, oldValue) => {
+    console.log('JSON 数据发生变化：', newValue);
+});
 
 // 将 JavaScript 对象序列化为 JSON 字符串
-const jsonCoordinates = JSON.stringify(JSONData.value);
+// const jsonCoordinates = JSON.stringify(JSONData.value);
 // 发送 POST 请求，将 JSON 数据传递给后端
 const btnFunction = () => {
     // 设置 Axios 的基础URL
     axios.defaults.baseURL = 'http://localhost:80';
-    axios.post('/tinterrain/dem2tintiles', jsonCoordinates)
+    const headerConfig = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    const data = {
+        "x1": 113.93515161,
+        "y1": 22.5384827,
+        "x2": 113.9366177,
+        "y2": 22.53871508
+    }
+
+    axios.post('/tinterrain/dem2tintiles', data, headerConfig)
         .then(response => {
             // 处理后端响应
             if (response.data.code === 1) {
@@ -43,6 +62,10 @@ const btnFunction = () => {
                 console.log('坐标文件名:', coordinateFileName);
 
                 // 这里可以根据坐标文件名执行进一步操作，例如下载文件
+                if (coordinateFileName !== '') {
+                    const downLoadUrl = 'http://localhost:80/tinterrain/download/' + coordinateFileName
+                    window.open(downLoadUrl, "download")
+                }
             } else {
                 // 请求不成功，处理错误信息
                 const errorMsg = response.data.msg;
