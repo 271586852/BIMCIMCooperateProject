@@ -344,6 +344,7 @@ const ModifyCompoAttr = async () => {
 .button-container {
     display: flex;
     justify-content: space-between;
+    flex-wrap: nowrap; /* 添加这一行 */
     position: fixed;
     bottom: 20px;
     left: 50%;
