@@ -40,6 +40,7 @@ src<br>
       │              │<br>
       │              ├─dto<br>
       │              │      IODir.java //输入输出目录的数据传输对象，用于接收前端传入的一对输入输出路径<br>
+      |              |      TifProcessInfoDto.java //前后端通信bbox数据传输对象，包括左上右下的顶点坐标和输入输出目录
       │              │<br>
       │              └─service<br>
       │                  │  TinTerrainService.java //TinTerrainDLL接口业务层接口<br>
@@ -57,7 +58,7 @@ src<br>
               sqlite3.dll<br>
               tiff.dll<br>
               tin-terrain.dll<br>
-2.目前可接受一个tinterrain下的Post请求，接收一个tif文件路径和一个目录，将dll处理的结果存放在指定的目录中
+2.目前可接受一个tinterrain下的Post请求，输入bbox的左上右下顶点坐标和文件在服务器上的存储路径和返回前端的文件名，Post请求的响应是字节流，通过浏览器的默认下载方式将文件下载到本地
 ## 实现难点
 JNA接口的映射规则:
 java接口和c++类中的方法/函数同名且同参数，Java和C++中的类型映射如下
@@ -89,7 +90,10 @@ java -jar .\CIM_Spring-1.0-SNAPSHOT.jar
 
 
 ## 使用方式
-向本地80端口的tinterrain发送post请求，请求体中携带一个tif文件路径和一输出目录（JSON格式）
+前端（5173或3000的跨域请求已被允许）向后端80端口发送请求，传输的是bbox的四个顶点坐标，返回浏览器下载dll生成的坐标txt文件
+
+## 现存问题
+未来要解决部署时的DLL依赖库最小化问题
 
 ## 更新日志
 2024.1.9新增技术文档
