@@ -93,8 +93,12 @@ std::string create_tiles_for_zoom_level(const RasterDouble& dem,
 visual studio2022中生成dll
 
 ## 使用方式
-为入口函数int dem2tintiles传入参数const char* input（输入dem文件路径）、const char* outputdir（输出文件夹路径）、float error（算法处理中所允许的最大误差）
+为入口函数const char* dem2tintiles传入参数：  
+**double minX, double minY, double maxX, double maxY**： 分别为输入包围盒的左下、右上经纬度坐标（CGCS2000大地坐标系）  
+**input**: 用于输入的放置tif格式dem文件夹路径，对应tin-terrain项目中的“input”  
+**output**: 三角网txt文件的输出文件夹，对应项目中的“output-dir”  
+得到的返回值为：生成的三角网txt格式文件的绝对路径。txt文件中
 
 ## 更新日志
-2024.1.9 新增技术文档
+2024.1.9 新增技术文档  
 2024.2.29 完善技术文档，新增C++技术路线ppt
