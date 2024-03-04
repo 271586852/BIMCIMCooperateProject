@@ -105,12 +105,20 @@ src
 单击顶部导航栏"BIM模型操作“后，四个按钮在页面下方出现。目前要通过“查询构件属性”来选中构件：可以通过dbId或者componentId(也是OBVID)两种id进行查询，查询成功后对应构件已选中，单击“显示构件属性”即可显示构件属性窗口，单击“删除构件”即可删除对应构件。
 
 #### 存在的问题
-- “构件搜索”的接口目前只支持通过dbId进行搜索，“获取指定构件”接口是通过componentId进行获取，所以构件的搜索目前只能通过这两个属性实现；
+- “构件搜索”的接口目前只支持通过dbId进行搜索，“获取指定构件”接口是通过componentId（即OBVID或xdbGuid）进行获取，所以构件的搜索目前只能通过这两个属性实现；
+![Alt text](../picture/search1.png)
+
+如图构件搜索接口无法搜索其他属性
+![Alt text](../picture/search2.png)
 - cim平台api存在问题，无法通过单击获取构件id等数据，进而无法实现单击高亮、选中构件并进行对应构件查询
 ![Alt text](../picture/api1.png)
 ![Alt text](../picture/api2.png)
-- 修改构件属性的接口在文档上的教学不清楚，无法实现
 
+如图，api返回的结果中tileset数据的id和userData为空，meta为undefined
+![Alt text](../picture/api3.png)
+
+- 修改构件属性的接口在文档上的教学不清楚，无法实现
+![Alt text](../picture/modify.png)
 
 **上述问题均已向构力反映**
 
