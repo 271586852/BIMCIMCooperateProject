@@ -99,7 +99,8 @@ src
 
 ### 4.添加图层功能实现
 对不同类型的图层设置了各自的响应式数据去接收用户设置的参数，有数字、geojson、文本、url、图片的base64编码等各种格式，再将这些数据组织成cim平台api规定的json格式作为对应api的参数实现图层的添加。
-其中添加3dtiles数据时还要输入用户使用构力控制台应用的clientId、clientsecret和带Bearer头的AccessToken（这个token在请求的headers中添加），这三个数据和模型的url使用了pinia的状态管理，以便bimcontrol.vue去实现一些bim模型相关请求的发送。
+其中添加3dtileset数据时还要输入用户使用构力控制台应用的clientId、clientsecret和带Bearer头的AccessToken（这个token在请求的headers中添加），这三个数据和模型的url使用了pinia的状态管理，以便bimcontrol.vue去实现一些bim模型相关请求的发送。
+![Alt text](../picture/tileset-flowchart.png)
 
 ### 5.BIM模型的删改查
 单击顶部导航栏"BIM模型操作“后，四个按钮在页面下方出现。目前要通过“查询构件属性”来选中构件：可以通过dbId或者componentId(也是OBVID)两种id进行查询，查询成功后对应构件已选中，单击“显示构件属性”即可显示构件属性窗口，单击“删除构件”即可删除对应构件。
