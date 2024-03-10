@@ -157,10 +157,11 @@ const GetsubDataId = async () => {
 
     }
 }
+
+
 /**
  * 查询构件属性相关
  */
-
 const isQuery = ref(false)
 const OpenQueryAttrWindow = () => {
     isQuery.value = !isQuery.value
@@ -170,7 +171,7 @@ const OpenQueryAttrWindow = () => {
 //查询构件属性窗口
 let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-//实现拖拽窗口
+//实现窗口拖拽
 const QueryAttrRef = ref(null);
 function dragMouseDown(e) {
     e.preventDefault();
@@ -268,7 +269,7 @@ const QueryAttr = async () => {
         // 请求成功，获取返回的数据
         ElMessage.success("查询到符合条件的构件")
         console.log("查询到符合条件的构件", QueryResponse.value.data)
-        console.log((QueryResponse.value.data.result[0].props))
+        console.log(QueryResponse.value.data.result)
         
     } catch (error) {
         // 请求失败，打印错误消息
@@ -328,6 +329,8 @@ const groupedProps = computed(() => {
         groups[groupName][propName] = value;
         return groups;
     }, {});
+
+    console.log('groupedProps:', groupedProps.value);  // 添加日志
 });
 
 

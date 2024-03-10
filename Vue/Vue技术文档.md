@@ -102,24 +102,51 @@ src
 其中添加3dtileset数据时还要输入用户使用构力控制台应用的clientId、clientsecret和带Bearer头的AccessToken（这个token在请求的headers中添加），这三个数据和模型的url使用了pinia的状态管理，以便bimcontrol.vue去实现一些bim模型相关请求的发送。
 ![Alt text](../picture/tileset-flowchart.png)
 
-### 5.BIM模型的删改查
-单击顶部导航栏"BIM模型操作“后，四个按钮在页面下方出现。目前要通过“查询构件属性”来选中构件：可以通过dbId或者componentId(也是OBVID)两种id进行查询，查询成功后对应构件已选中，单击“显示构件属性”即可显示构件属性窗口，单击“删除构件”即可删除对应构件。
+### 5.BIM 模型的删改查
 
-#### 存在的问题
-- “构件搜索”的接口目前只支持通过dbId进行搜索，“获取指定构件”接口是通过componentId（即OBVID或xdbGuid）进行获取，所以构件的搜索目前只能通过这两个属性实现；
-![Alt text](../picture/search1.png)
+单击顶部导航栏"BIM 模型操作“后，六个按钮在页面下方出现：获取 subDataId、显示构件属性、查询构件属性、修改构件属性、删除构件属性、删除构件。目前要通过“查询构件属性”来选中构件：可以通过 dbId 或者 componentId(也是 OBVID)两种 id 进行查询，查询成功后对应构件已选中，单击“显示构件属性”即可显示构件属性窗口，单击“删除构件”即可删除对应构件。
 
-如图构件搜索接口无法搜索其他属性
-![Alt text](../picture/search2.png)
-- cim平台api存在问题，无法通过单击获取构件id等数据，进而无法实现单击高亮、选中构件并进行对应构件查询
-![Alt text](../picture/api1.png)
-![Alt text](../picture/api2.png)
+#### 1） 获取 subDataId
 
-如图，api返回的结果中tileset数据的id和userData为空，meta为undefined
-![Alt text](../picture/api3.png)
+首先截取用户输入的模型 url 中的一段加上"urn:bimbox.object:translation_result_v2/" 作为 externalId，再发送 GET 请求通过`查询数据子集`接口得到 subDataId。注意在进行其他 bim 模型操作前必须先获取 subDataId，后面功能发送的请求的请求体都需要用到 subDataId。
+![Alt text](../picture/subdataid.png)
 
-- 修改构件属性的接口在文档上的教学不清楚，无法实现
+#### 2) 查询构件属性
+
+用户输入属性名及对应属性值即可查询，要注意是严格匹配的：即属性值的大小写要一致，属性名的每一个数字、符号也要一致。单击“搜索”按钮后，如有符合条件的构件，按键下方会出现以对应构件的 batch：id 为文本的按钮，单击即可选中展示在构件属性信息窗口。此功能通过发送 POST 请求到`构件搜索`接口实现。
+![Alt text](../picture/search.png)
+
+#### 3) 修改/创建构件属性
+
+在键文本框上输入属性名（注意属性名要求和查询时一致），值文本框上输入属性值，单击“确定”按钮即可修改构件属性。当用户想修改、创建多个属性时，单击“+”按钮添加一对键值对文本框；当用户想删除一对键值对文本框，可以单击值文本框后的垃圾桶样式按钮。注意：文本框不能为空。此功能通过发送 POST 请求到`创建或修改构件`接口实现。
 ![Alt text](../picture/modify.png)
+
+#### 4) 删除构件属性
+
+这个的使用方法与修改/创建构建属性一致，但是删除构件属性只需在文本框中输入想要删除的属性的名字即可。此功能通过发送 POST 请求到`创建或修改构件`接口实现（与第三个功能一致）。
+
+#### 5） 删除构件
+
+在直接单击构件选中后（未实现）或查询构件属性窗口选中构件后，此时 componentId 已被保存，单击“删除构件”按钮后即可直接删除构件。此功能通过发送 DELETE 请求到`删除构件`接口实现。
+![Alt text](../picture/delete.png)
+
+#### 6） 显示构件属性
+`构件搜索`接口的响应体中的result属性是一个对象数组，result中的每个对象里的props属性是每个构件的属性。`selectedItemProps`变量负责接收选中的构件的props对象，然后用`groupedProps`计算属性对`selectedItemProps`进行处理。
+![Alt text](../picture/response.png)
+
+- `groupedProps` 是一个计算属性，它的值是一个对象，这个对象的属性是分组后的 `selectedItemProps.value` 对象的属性。`selectedItemProps.value` 对象的每个属性名都是由组名和属性名组成的，中间用冒号 : 分隔。例如，属性名 `Default:NAME` 的组名是 `Default`，属性名是 `NAME`
+- 使用`Object.entries(selectedItemProps.value)` 返回一个数组，数组的每个元素都是一个数组，包含一个属性名和一个属性值。`reduce` 方法将这个数组转换为一个对象，这个对象的属性是分组后的属性。将 `selectedItemProps.value` 对象的属性按照组名进行分组，并返回一个包含分组后的属性的对象
+- 在窗口展示界面的代码中，使用`v-for`指令遍历`groupedProps`对象的每个属性，对于
+每个属性，创建一个 `div` 元素，以使每个组别间有明显分界。这个 `div` 元素包含一个 `h3` 元素和一个 `table` 元素。`h3` 元素显示组别名，`table` 元素用来装载各个组别中不同属性名及其属性值，以便整体对齐，较为美观。
+
+#### `存在的问题`
+
+- cim 平台 api 存在问题，无法通过直接单击构件获取构件 id 等数据，进而无法实现单击高亮、选中构件并进行对应构件查询
+  ![Alt text](../picture/api1.png)
+  ![Alt text](../picture/api2.png)
+
+如图，api 返回的结果中 tileset 数据的 id 和 userData 为空，meta 为 undefined
+![Alt text](../picture/api3.png)
 
 **上述问题均已向构力反映**
 
