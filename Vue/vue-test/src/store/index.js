@@ -26,7 +26,7 @@ export default createStore({
         //上传tif
         UploadDivVisible:false,
         // 传递json
-        JSONData: [false],
+        JSONData: {},
     },
 
     //使用以下方法调用

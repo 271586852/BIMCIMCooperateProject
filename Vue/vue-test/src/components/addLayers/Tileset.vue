@@ -36,6 +36,7 @@ const tilesProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 const Bimstore = useBimStore()
@@ -101,6 +102,7 @@ const add3DTiles = (name, url, headers) => {
         })
         .then(res => {
             console.log("成功添加", res, res.data.id);
+            tilesProp.fetchEntityTree();
             ElMessage({
                 message: "添加成功",
                 type: "success"

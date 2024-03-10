@@ -66,6 +66,7 @@ const WallProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 
@@ -128,6 +129,7 @@ const addWall = () => {
     console.log("添加Walls", wall);
     WallProp.api.graphic.add(wall).then(res => {
         console.log("成功添加", res, res.data.id);
+        WallProp.fetchEntityTree();
         ElMessage({
             message: "添加成功",
             type: "success"

@@ -65,6 +65,7 @@ const PolylineProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 
@@ -127,6 +128,7 @@ const addPolyline = () => {
     console.log("添加Polyline", polyline);
     PolylineProp.api.graphic.add(polyline).then(res => {
         console.log("成功添加", res, res.data.id);
+        PolylineProp.fetchEntityTree();
         ElMessage({
             message: "添加成功",
             type: "success"

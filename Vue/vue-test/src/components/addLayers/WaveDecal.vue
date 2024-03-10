@@ -62,6 +62,7 @@ const WaveDecalProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 
@@ -118,6 +119,7 @@ const addWaveDecal = () => {
     console.log("添加WaveDecal", wavedecal);
     WaveDecalProp.api.graphic.add(wavedecal).then(res => {
         console.log("成功添加", res, res.data.id);
+        WaveDecalProp.fetchEntityTree();
         ElMessage({
             message: "添加成功",
             type: "success"

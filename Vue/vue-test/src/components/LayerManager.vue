@@ -1,4 +1,4 @@
- <!--
+<!--
  * @FileDescription: 图层管理（显示、隐藏、删除->新增图层）
  * @LastEditTime: 1.20
  -->
@@ -55,31 +55,31 @@
     </div>
 
     <!-- 添加3DTiles数据集窗口 -->
-    <Tileset :api="props.api" />
+    <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加label窗口 -->
-    <Label :api="props.api" />
+    <Label :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加marker窗口 -->
-    <Marker :api="props.api" />
+    <Marker :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加WaveDecal窗口 -->
-    <WaveDecal :api="props.api" />
+    <WaveDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加ODLine窗口 -->
-    <ODLine :api="props.api" />
+    <ODLine :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加Polyline窗口 -->
-    <Polyline :api="props.api" />
+    <Polyline :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加Walls窗口 -->
-    <Wall :api="props.api" />
+    <Wall :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加GeometryDecal窗口 -->
-    <GeometryDecal :api="props.api" />
+    <GeometryDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加TextureDecal窗口 -->
-    <TextureDecal :api="props.api" />
+    <TextureDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 图层管理模块 ---------->
 
@@ -94,7 +94,8 @@
                     <li class="layer-item" :id="layer.id" :key="layer.id">
                         <el-checkbox type="checkbox" :id="layer.name" v-model="layer.visible"
                             @change="toggleLayerVisibility(layer)" />
-                        <span class="layer-name" @click="toggleCollapse(layer.id)" :for="layer.name" @dblclick="flyToLayer(layer.id)">
+                        <span class="layer-name" @click="toggleCollapse(layer.id)" :for="layer.name"
+                            @dblclick="flyToLayer(layer.id)">
                             <svg v-if="layer.overlays.length > 0" class="layer-svg" xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 1024 1024" data-v-ea893728=""
                                 :style="{ 'transform': isCollapsed[layer.id] ? 'rotate(0deg)' : 'rotate(90deg)', 'transition': 'transform 0.3s' }">
@@ -102,15 +103,17 @@
                                     d="M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0z">
                                 </path>
                             </svg>{{ layer.name }}</span>
-                        <el-button class="delete-layer-symbol button" @click="deleteLayer(layer.id)" text>Delete</el-button>
+                        <el-button class="delete-layer-symbol button" @click="deleteLayer(layer.id)"
+                            text>Delete</el-button>
                         <ul v-if="layer.overlays" :class="{ 'collapse': isCollapsed[layer.id] }">
                             <li v-for="overlay in layer.overlays" :key="overlay.id" class="overlay-item"
                                 style="margin-left: 20px;">
                                 <el-checkbox type="checkbox" :id="overlay.name" v-model="overlay.visible"
                                     @change="toggleOverlayVisibility(layer.id, overlay)" />
-                                <span class="layer-name" :for="overlay.name" @dblclick="flyToLayer(layer.id)" >{{ overlay.name }}</span>
-                                <el-button class="delete-layer-symbol button" @click="deleteOverlay(layer.id, overlay.id)"
-                                    text>Delete</el-button>
+                                <span class="layer-name" :for="overlay.name" @dblclick="flyToLayer(layer.id)">{{
+                    overlay.name }}</span>
+                                <el-button class="delete-layer-symbol button"
+                                    @click="deleteOverlay(layer.id, overlay.id)" text>Delete</el-button>
                             </li>
                         </ul>
                     </li>
@@ -119,9 +122,9 @@
         </transition>
     </div>
 </template>
-  
+
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, watch, computed, watchEffect } from 'vue';
 import { useStore } from 'vuex';
 import {
     Menu as IconMenu,
@@ -295,237 +298,33 @@ const toggleCollapse = (layerId) => {
     isCollapsed.value[layerId] = !isCollapsed.value[layerId];
 };
 
-const layersTest = ref(
-    [
-        {
-            "id": "FD7068DCCBAC4718E32F281D1FBB418B",
-            "pid": "-1",
-            "name": "terrain",
-            "type": "Tileset",
-            "visible": true,
-            "userData": "",
-            "url": "http:/localhost:3000/DEM/layer.json",
-            "headers": {},
-            "overlays": [
-                {
-                    "type": "tms",
-                    "name": "DOM",
-                    "url": "http:/localhost:3000/DOM",
-                    "index": 1,
-                    "headers": {},
-                    "style": "",
-                    "opacity": 1,
-                    "id": "B4F73C7AD68201AD4AB2E21A3F5D3FED",
-                    "layer": "",
-                    "format": "image/png",
-                    "pattern": "{\"line\":{\"lineDashArray\":[10,15],\"lineWidth\":5,\"lineOpacity\":1,\"lineColor\":\"rgba(255, 255, 255, 1)\"},\"ring\":{\"fill\":{\"fillOpacity\":1,\"fillColor\":\"rgba(255, 0, 0, 1)\"},\"outline\":{\"lineDashArray\":[10,15],\"lineWidth\":5,\"lineOpacity\":1,\"lineColor\":\"rgba(255, 255, 0, 1)\"}}}",
-                    "tilingScheme": "Geographic",
-                    "tilesetId": "FD7068DCCBAC4718E32F281D1FBB418B",
-                    "visible": true
-                }
-            ]
-        },
-        {
-            "id": "72A42845AA4BA424B5C3D721588F84F2",
-            "pid": "-1",
-            "name": "深大建筑",
-            "type": "Level",
-            "visible": true,
-            "userData": "",
-            "url": "/Game/map/Building",
-            "localOriginShift": {
-                "translation": [
-                    0,
-                    0,
-                    0
-                ],
-                "rotation": [
-                    0,
-                    0,
-                    0
-                ],
-                "scale3D": [
-                    1,
-                    1,
-                    1
-                ]
-            },
-            "localToEarthLonLatH": [
-                113.92,
-                22.52,
-                2245
-            ],
-            "overlays": []
-        },
-        {
-            "id": "1EDDEB1E26E4F89AFCD80900A46D0050",
-            "pid": "-1",
-            "name": "深大道路",
-            "type": "Level",
-            "visible": true,
-            "userData": "",
-            "url": "/Game/map/Road",
-            "localOriginShift": {
-                "translation": [
-                    0,
-                    0,
-                    0
-                ],
-                "rotation": [
-                    0,
-                    0,
-                    0
-                ],
-                "scale3D": [
-                    1,
-                    1,
-                    1
-                ]
-            },
-            "localToEarthLonLatH": [
-                113.92,
-                22.52,
-                2245
-            ],
-            "overlays": []
-        },
-        {
-            "id": "4F3A55D251B5C134CEB2CE602CCEA2D9",
-            "pid": "-1",
-            "name": "深大灌木",
-            "type": "Level",
-            "visible": true,
-            "userData": "",
-            "url": "/Game/map/Guanmu",
-            "localOriginShift": {
-                "translation": [
-                    0,
-                    0,
-                    0
-                ],
-                "rotation": [
-                    0,
-                    0,
-                    0
-                ],
-                "scale3D": [
-                    1,
-                    1,
-                    1
-                ]
-            },
-            "localToEarthLonLatH": [
-                113.92,
-                22.52,
-                2245
-            ],
-            "overlays": []
-        },
-        {
-            "id": "9E13AA5E5D1DDAD1D563CDD9239AE51D",
-            "pid": "-1",
-            "name": "深大部件",
-            "type": "Level",
-            "visible": true,
-            "userData": "",
-            "url": "/Game/map/Bujian",
-            "localOriginShift": {
-                "translation": [
-                    0,
-                    0,
-                    0
-                ],
-                "rotation": [
-                    0,
-                    0,
-                    0
-                ],
-                "scale3D": [
-                    1,
-                    1,
-                    1
-                ]
-            },
-            "localToEarthLonLatH": [
-                113.92,
-                22.52,
-                2245
-            ],
-            "overlays": []
-        },
-        {
-            "id": "147622A148445750D5E7E65ACFC3DF63",
-            "pid": "-1",
-            "name": "深大地形",
-            "type": "Level",
-            "visible": true,
-            "userData": "",
-            "url": "/Game/map/Terrain",
-            "localOriginShift": {
-                "translation": [
-                    0,
-                    0,
-                    0
-                ],
-                "rotation": [
-                    0,
-                    0,
-                    0
-                ],
-                "scale3D": [
-                    1,
-                    1,
-                    1
-                ]
-            },
-            "localToEarthLonLatH": [
-                113.92,
-                22.52,
-                2245
-            ],
-            "overlays": []
-        },
-        {
-            "id": "02DA47FD3905568C8D3303158558262C",
-            "pid": "-1",
-            "name": "南山区",
-            "type": "Tileset",
-            "visible": true,
-            "userData": "",
-            "url": "http://172.31.61.68:3000/assets/data/gw/TILE_3D_MODEL/sz/nanshan2021/tileset.json",
-            "headers": {},
-            "overlays": []
-        }
-    ]
-);
+const layers = ref([]);
+let entityTree = ref();
 
-const layers = ref([])
-const entityTree = ref()
 onMounted(async () => {
+    await fetchEntityTree();
+});
+
+async function fetchEntityTree() {
     entityTree.value = await props.api.entityTree.get();
+    await updateLayers();
+    console.log('图层数据获取成功：');
+}
+
+watch(entityTree, async (newEntityTree) => {
+    await updateLayers();
+}, { deep: true });
+
+async function updateLayers() {
     layers.value = entityTree.value.map(layer => ({
         ...layer,
         visible: layer.visible,
-        overlays: [] // 将用于存储overlay的数组
+        overlays: []
     }));
-    console.log('图层数据输出：', layers.value);
+    console.log('图层数据更新：', layers.value);
     await loadOverlays();
-});
+}
 
-//监测实体树变化（一有新图层加入即刷新，使图层管理添加新图层）
-watch(entityTree, async () => {
-    entityTree.value = await props.api.entityTree.get();
-    layers.value = entityTree.value.map(layer => ({
-        ...layer,
-        visible: layer.visible, // 假设所有图层默认可见
-        overlays: [] // 将用于存储overlay的数组
-    }));
-    await loadOverlays();
-})
-
-/**
- * 加载图层的overlay
- */
 async function loadOverlays() {
     for (const layer of layers.value) {
         const overlays = await props.api.tileset.overlay.get({ tilesetId: layer.id });
@@ -665,7 +464,7 @@ function closeDragElement() {
 }
 // --可拖拽控件----
 </script>
-  
+
 <style>
 #layer-add {
     /* 添加或调整样式以改善外观 */
@@ -680,19 +479,6 @@ function closeDragElement() {
 
 
 
-/* 图层管理控件样式 */
-.layer-control {
-    width: 200px;
-    position: absolute;
-    right: 10px;
-    top: 500px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-    padding: 10px;
-    cursor: move;
-    /* 可拖动的光标样式 */
-    z-index: 1000;
-}
 
 
 
@@ -772,13 +558,13 @@ function closeDragElement() {
     width: 350px;
     position: absolute;
     right: 10px;
-    top: 500px;
+    top: 400px;
     border: 1px;
     background-color: #f9f9f9;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 10px;
     border-radius: 5%;
-    /* cursor: move; */
+    cursor: move;
     /* 可拖动的光标样式 */
     z-index: 10;
 }
@@ -926,4 +712,3 @@ function closeDragElement() {
     opacity: 0;
 }
 </style>
-  

@@ -2,24 +2,27 @@
  * @FileDescription: 计算坐标所对应的.terrain信息
  * @LastEditTime: 1.20
  -->
-<template>
+ <template>
     <div class="info-div " v-if="showInfo">
         <h3>Terrain瓦片顶点相对坐标</h3>
         <el-scrollbar height="500px" class="rich-text">
             <p class="text-p">EPSG3857</p>
             <p class="text-p">{{ centerBbox.x }},{{ centerBbox.y }}</p>
             <p class="text-p">{{ epsg3857CoordsCenter[0] }},{{ epsg3857CoordsCenter[1] }}</p>
-            <p class="text-p" v-for="(obj, index) in relativeCoordinatesArray" :key="index">
+            <!-- <p class="text-p" v-for="(obj, index) in relativeCoordinatesArray" :key="index">
             <p class="text-p" v-for="(point, pointIndex) in obj" :key="pointIndex">
                 {{ point.x }},{{ point.y }},{{ point.z }}<br />
             </p>
+            </p> 原来的9级-->
+            <p class="text-p" v-for="(point, pointIndex) in relativeCoordinatesArray" :key="pointIndex">
+                {{ formatNumber(point.x) }},{{ formatNumber(point.y) }},{{ formatNumber(point.z) }}<br />
             </p>
         </el-scrollbar>
         <div class="item-center " id="export-div">
             <el-button round size="large" @click="exportTxt">导 出</el-button>
         </div>
         <!-- 窗口右上角关闭按钮svg -->
-        <i class="el-icon closeBtn" @click="showInfo = false" >
+        <i class="el-icon closeBtn" @click="showInfo = false">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
                 <path fill="currentColor"
                     d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z" />
@@ -29,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted, provide } from 'vue';
 import { useStore } from "vuex";
 import axios from 'axios';
 import saveAS from 'file-saver';
@@ -49,7 +52,7 @@ let maxLon = ref()
 let minLat = ref()
 let maxLat = ref()
 
-maxLevel.value = 9 //先暂定最大层数为10（0-9）
+maxLevel.value = 17 //先暂定最大层数为10（0-9）
 // --发起HTTP请求,通过meta.json文件获取最大层级------------
 // axios.get('http://localhost:3000/DEM/meta.json')
 //     .then(response => {
@@ -82,7 +85,7 @@ let relativeCoordinatesArray = ref();//顶点相对矩形框中心的3857相对�
 let epsg3857terrainCenter = ref();//瓦片中心的3957坐标数组
 let centerBbox = ref() //最大矩形框的经纬度坐标
 
-const SZU = false
+const SZU = true
 //最大矩形框的3857范围
 let minMaxValues
 //最大矩形框的3857坐标
@@ -142,7 +145,7 @@ const YsizeDecodeTerrainArray = async (urlArray) => {
 
         // 使用函数将ECEF坐标转换为WGS84坐标数组
         wgs84SameXCoords = ecefToWGS84(CenterXYZ);
-        // console.log('x相同y范围WGS84坐标数组：', wgs84SameXCoords);
+        console.log('x相同y范围WGS84坐标数组：', wgs84SameXCoords);
         // 计算每个瓦片中心的y的范围
         ysize.value = calculateYRange(wgs84SameXCoords)
         console.log('通过原始瓦片计算得到的y范围：', ysize.value);
@@ -202,7 +205,7 @@ const XsizeDecodeTerrainArray = async (urlArray) => {
 
         // 使用函数将ECEF坐标转换为WGS84坐标数组
         wgs84SameYCoords = ecefToWGS84(CenterXYZ);
-        // console.log('y相同x范围WGS84坐标数组：', wgs84SameYCoords);
+        console.log('y相同x范围WGS84坐标数组：', wgs84SameYCoords);
         // 计算每个瓦片中心的x的范围
         xsize.value = calculateXRange(wgs84SameYCoords)
         console.log('通过原始瓦片计算得到的x范围：', xsize.value);
@@ -232,19 +235,19 @@ const calculateXYsize = () => {
     XsizeDecodeTerrainArray(YsizeUrls)
 
 }
-calculateXYsize(); // 部署egnix下记得打开-------------------------------------------------
+// calculateXYsize(); // 部署egnix下记得打开-------------------------------------------------
 
 // --测试用例--------------------------------------------------------------------------------
 // 先计算每个tile的边界范围,
 const calculateXYsizeTest = () => {
     // -----深圳大学测试用例--------
     if (SZU) {
-        for (let i = 18489; i <= 18491; i++) {
-            const urlx = `public/15/26753/${i}.terrain`;
+        for (let i = 73958; i <= 73964; i++) {
+            const urlx = `public/17/107014/${i}.terrain`;
             XsameUrls.push(urlx);
         }
-        for (let i = 26753; i <= 26754; i++) {
-            const urly = `public/15/${i}/18489.terrain`;
+        for (let i = 107014; i <= 107019; i++) {
+            const urly = `public/17/${i}/73958.terrain`;
             YsameUrls.push(urly);
         }
     } else {
@@ -259,13 +262,13 @@ const calculateXYsizeTest = () => {
         }
     }
 
-    // console.log('XsameUrls', XsameUrls);
-    // console.log('YsameUrls', YsameUrls);
+    console.log('XsameUrls', XsameUrls);
+    console.log('YsameUrls', YsameUrls);
     YsizeDecodeTerrainArray(XsameUrls)
     XsizeDecodeTerrainArray(YsameUrls)
 }
 
-// calculateXYsizeTest(); // 计算瓦片的xyz范围
+calculateXYsizeTest(); // 计算瓦片的xyz范围
 // --测试用例--------------------------------------------------------------------------------
 
 // 计算每个点相对于中心点的坐标并保留 z 坐标
@@ -390,24 +393,7 @@ const decodeTerrainArray = async (urlArray) => {
         let i = 0;
         // 计算每个瓦片的范围
         decodedDataArray.forEach(oneTerrainData => {
-            let Xmin, Xmax, Ymin, Ymax
-            if (SZU) {
-                // 同列情况
-                Xmin = oneTerrainData.header.centerX - rangeArray[1].avgXsizeECEF_sameY
-                Xmax = oneTerrainData.header.centerX + rangeArray[1].avgXsizeECEF_sameY
-                // 同一行的情况
-                Ymin = oneTerrainData.header.centerY - rangeArray[0].avgYsizeECEF_sameX
-                Ymax = oneTerrainData.header.centerY + rangeArray[0].avgYsizeECEF_sameX
-            } else {
-                // 同列情况
-                Xmin = oneTerrainData.header.centerX - rangeArray.avgXsizeECEF_sameX
-                Xmax = oneTerrainData.header.centerX + rangeArray.avgXsizeECEF_sameX
-                // 同一行的情况
-                Ymin = oneTerrainData.header.centerY - rangeArray.avgYsizeECEF_sameY
-                Ymax = oneTerrainData.header.centerY + rangeArray.avgYsizeECEF_sameY
 
-            }
-            // console.log('该块范围：', Xmin, Xmax, Ymin, Ymax);
 
 
             // 计算顶点坐标ECEF
@@ -417,33 +403,24 @@ const decodeTerrainArray = async (urlArray) => {
             allvexArrayECEF.push(vexArrayECEF.value)
 
             // 计算相对坐标和deltaH值，并添加到顶点坐标数组中，返回一个新数组，包含所有瓦片的顶
-            let verticesRelativeECEF, wgs84Vertices
-            let ECEF = false
-            if (SZU) {
-                console.log('szu测试');
-                verticesRelativeECEF = calculateRelativeCoordinates(oneTerrainData, vexArrayECEF.value, 2 * rangeArray[1].avgXsizeECEF_sameY, 2 * rangeArray[0].avgYsizeECEF_sameX, xsize.value, ysize.value);
-                console.log('顶点坐标数组（相对坐标）：', verticesRelativeECEF);
+            // let verticesRelativeECEF, wgs84Vertices
+            // let ECEF = false
+            // if (SZU) {
+            //     console.log('szu测试');
+            //     verticesRelativeECEF = calculateRelativeCoordinates(oneTerrainData, vexArrayECEF.value, 2 * rangeArray[1].avgXsizeECEF_sameY, 2 * rangeArray[0].avgYsizeECEF_sameX, xsize.value, ysize.value);
+            //     console.log('顶点坐标数组（相对坐标）：', verticesRelativeECEF);
 
-                wgs84Vertices = addDeltaUVDeltaH(wgs84Coords[i], verticesRelativeECEF)
-                // console.log('顶点的相对坐标（wgs84）', wgs84Vertices);
-                allvexArrayECEF.push(wgs84Vertices)
-            } else if (ECEF) {
-                verticesRelativeECEF = calculateRelativeCoordinates(oneTerrainData, vexArrayECEF.value, 2 * rangeArray.avgXsizeECEF_sameX, 2 * rangeArray.avgYsizeECEF_sameY, xsize.value, ysize.value);
-                console.log('顶点坐标数组（相对坐标）：', verticesRelativeECEF);
+            //     wgs84Vertices = addDeltaUVDeltaH(wgs84Coords[i], verticesRelativeECEF)
+            //     // console.log('顶点的相对坐标（wgs84）', wgs84Vertices);
+            //     allvexArrayECEF.push(wgs84Vertices)
+            // } else if (ECEF) {
+            //     verticesRelativeECEF = calculateRelativeCoordinates(oneTerrainData, vexArrayECEF.value, 2 * rangeArray.avgXsizeECEF_sameX, 2 * rangeArray.avgYsizeECEF_sameY, xsize.value, ysize.value);
+            //     console.log('顶点坐标数组（相对坐标）：', verticesRelativeECEF);
 
-                wgs84Vertices = addDeltaUVDeltaH(wgs84Coords[i], verticesRelativeECEF)
-                // console.log('顶点的相对坐标（wgs84）', wgs84Vertices);
-                allvexArrayECEF.push(wgs84Vertices)
-            }
-
-            // 创建包含范围的对象并添加到数组中
-            const tileRange = {
-                Xmin,
-                Xmax,
-                Ymin,
-                Ymax,
-            };
-            tileRanges.push(tileRange);
+            //     wgs84Vertices = addDeltaUVDeltaH(wgs84Coords[i], verticesRelativeECEF)
+            //     // console.log('顶点的相对坐标（wgs84）', wgs84Vertices);
+            //     allvexArrayECEF.push(wgs84Vertices)
+            // }
             i++;
         })
         console.log('顶点坐标数组：（wgs84）', allvexArrayECEF);
@@ -472,16 +449,29 @@ const decodeTerrainArray = async (urlArray) => {
         console.log('筛选范围:', minMaxValues.minX, minMaxValues.maxX, minMaxValues.minY, minMaxValues.maxY);
         // 对3857进行筛选
         // 根据范围筛选对象
-        const filteredData = convertedCoordinates.map(obj => {
-            return obj.filter(point => {
+        let filteredData
+        if (SZU) {
+            filteredData = convertedCoordinates.filter(point => {
                 return (
-                    point.x >= minMaxValues.minX - 1000 &&
-                    point.x <= minMaxValues.maxX + 1000 &&
-                    point.y >= minMaxValues.minY - 1000 &&
-                    point.y <= minMaxValues.maxY + 1000
+                    point.x >= minMaxValues.minX &&
+                    point.x <= minMaxValues.maxX &&
+                    point.y >= minMaxValues.minY &&
+                    point.y <= minMaxValues.maxY
                 );
+            })
+        }
+        else {
+            filteredData = convertedCoordinates.map(obj => {
+                return obj.filter(point => {
+                    return (
+                        point.x >= minMaxValues.minX - 1000 &&
+                        point.x <= minMaxValues.maxX + 1000 &&
+                        point.y >= minMaxValues.minY - 1000 &&
+                        point.y <= minMaxValues.maxY + 1000
+                    );
+                });
             });
-        });
+        }
         console.log('筛选后的对象：', filteredData);
 
 
@@ -954,10 +944,10 @@ const calculateVerticesCoordinatesLonLat = (decodedDataLonlat, wgs84CoordsArray,
     const coordinates = <any>[];
     const vertexCount = decodedDataLonlat.vertexData.length / 3;
 
-    for (let i = 0; i < vertexCount; i++) {
+    for (let i = 0; i < vertexCount * 3; i+=3) {
         const x = mimLon + (decodedDataLonlat.vertexData[i] / 32767) * xsize;
-        const y = minLat + (decodedDataLonlat.vertexData[i + vertexCount] / 32767) * ysize;
-        const z = minHeight + (decodedDataLonlat.vertexData[i + 2 * vertexCount] / 32767) * (maxHeight - minHeight);
+        const y = minLat + (decodedDataLonlat.vertexData[i + 1] / 32767) * ysize;
+        const z = minHeight + (decodedDataLonlat.vertexData[i + 2] / 32767) * (maxHeight - minHeight);
 
         coordinates.push({ x, y, z });
     }
@@ -1390,18 +1380,31 @@ watch(TileInfo, (newTileInfo, oldTileInfo) => {
         maxLat.value = leftTop[1]
         console.log('最小经度：', minLon.value, '最大经度：', maxLon.value, '最小纬度：', minLat.value, '最大纬度:', maxLat.value);
 
+        const json = [minLon.value, minLat.value, maxLon.value, maxLat.value];
+
+
+        store.commit("updateJSONData", json);
 
         // 创建一个空数组来存储 URL
         let DEMurlArray: string[] = [], uniqueTiles;
 
         // 计算行列号
-        uniqueTiles = calculateUniqueTileXY(maxRectangle, xsize.value, ysize.value, originX, originY);
+        if (SZU) {
+            uniqueTiles = convertCoordinatesToTMS(maxRectangle, maxLevel.value)
+        } else {
+            uniqueTiles = calculateUniqueTileXY(maxRectangle, xsize.value, ysize.value, originX, originY);
+        }
+
         console.log('最大框对应的行列号', uniqueTiles);
 
         // 遍历对象数组并生成 URL 地址
         uniqueTiles.forEach(item => {
-            const url = `http://localhost:3000/DEM/${maxLevel.value}/${item.x}/${item.y}.terrain`;
-            // const url = `public/${maxLevel.value}/${item.x}/${item.y}.terrain`;// 测试用，记得删
+            let url;
+            if (SZU) {
+                url = `public/${maxLevel.value}/${item.x}/${item.y}.terrain`;// 测试用，记得删
+            } else {
+                url = `http://localhost:3000/DEM/${maxLevel.value}/${item.x}/${item.y}.terrain`;
+            }
 
             // 将生成的 URL 存入数组
             DEMurlArray.push(url);
@@ -1656,9 +1659,16 @@ const prepareExportData = () => {
     // 遍历relativeCoordinatesArray中的内容
     // exportData += "Relative Coordinates:\n";
     // 添加相对坐标数据
-    for (let objArray of relativeCoordinatesArray.value) {
-        for (let point of objArray) {
+    if (SZU) {
+        for (let point of relativeCoordinatesArray.value) {
             exportData += `${formatNumber(point.x)}, ${formatNumber(point.y)}, ${formatNumber(point.z)}\n`;
+        }
+    }
+    else {
+        for (let objArray of relativeCoordinatesArray.value) {
+            for (let point of objArray) {
+                exportData += `${formatNumber(point.x)}, ${formatNumber(point.y)}, ${formatNumber(point.z)}\n`;
+            }
         }
     }
     return exportData;

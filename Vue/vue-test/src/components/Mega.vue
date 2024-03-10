@@ -3,7 +3,7 @@
  * @LastEditTime: 1.20
  -->
 
-<template>
+ <template>
   <div id="container">
     <div id="player"></div>
 
@@ -153,7 +153,7 @@ if (api.control.enableStudioKeyFrameChanged(true))
 
 
 api.onEvent(e => {
-  console.log("onEvent事件", e.type, e.data); // 事件类型、事件反馈结果
+  // console.log("onEvent事件", e.type, e.data); // 事件类型、事件反馈结果
 
   if (e.type === "LeftMouseClick") {
     // 点击事件反馈，需要在api.control处开启点击事件

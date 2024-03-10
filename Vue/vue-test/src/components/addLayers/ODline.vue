@@ -76,6 +76,7 @@ const ODLineProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 
@@ -152,6 +153,7 @@ const addODLine = () => {
     console.log("添加ODLine", odline);
     ODLineProp.api.graphic.add(odline).then(res => {
         console.log("成功添加", res, res.data.id);
+        ODLineProp.fetchEntityTree();
         ElMessage({
             message: "添加成功",
             type: "success"
