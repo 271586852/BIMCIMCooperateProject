@@ -116,6 +116,7 @@ const labelProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 /**
@@ -187,6 +188,7 @@ const addLabel = () => {
         .add(labelData)
         .then(res => {
             console.log("成功添加", res, res.data.id);
+            labelProp.fetchEntityTree();
             ElMessage({
                 message: "添加成功",
                 type: "success"

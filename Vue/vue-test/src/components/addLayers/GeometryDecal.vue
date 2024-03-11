@@ -66,6 +66,7 @@ const GeometryDecalProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 
@@ -128,6 +129,7 @@ const addGeometryDecal = () => {
     console.log("添加GeometryDecal", geodecal);
     GeometryDecalProp.api.graphic.add(geodecal).then(res => {
         console.log("成功添加", res, res.data.id);
+        GeometryDecalProp.fetchEntityTree();
         ElMessage({
             message: "添加成功",
             type: "success"

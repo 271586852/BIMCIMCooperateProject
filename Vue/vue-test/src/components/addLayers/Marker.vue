@@ -103,6 +103,7 @@ const MarkerProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 
@@ -163,6 +164,7 @@ const addMarker = () => {
     console.log("添加Marker", marker);
     MarkerProp.api.graphic.add(marker).then(res => {
         console.log("成功添加", res, res.data.id);
+        MarkerProp.fetchEntityTree();
         ElMessage({
             message: "添加成功",
             type: "success"

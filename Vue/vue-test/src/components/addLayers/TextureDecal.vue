@@ -89,6 +89,7 @@ const TextureDecalProp = defineProps({
         type: Object,
         required: true
     },
+    fetchEntityTree: Function,
 })
 
 //鼠标点击定位
@@ -216,6 +217,7 @@ const addTextureDecal = () => {
     console.log("添加TextureDecal", texturedecal);
     TextureDecalProp.api.graphic.add(texturedecal).then(res => {
         console.log("成功添加", res, res.data.id);
+        TextureDecalProp.fetchEntityTree();
         ElMessage({
             message: "添加成功",
             type: "success"

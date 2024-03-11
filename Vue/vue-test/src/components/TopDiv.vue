@@ -16,7 +16,7 @@
 </template>
   
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, inject } from 'vue';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { useStore } from "vuex";
@@ -25,13 +25,25 @@ const store = useStore();
 
 // 仓库数据
 const uploadDivVisible = computed(() => store.state.UploadDivVisible); // 上传tif
-// const JSONData = computed(() => store.state.JSONData); // 获取JSON数据
-// 将 Vuex 中的 JSONData 映射到本地响应式数据，并进行序列化
-const jsonData = ref(JSON.stringify(store.state.JSONData));
 
-// 使用 watch 监听 jsonData 的变化，并在变化时输出日志
-watch(jsonData, (newValue, oldValue) => {
-    console.log('JSON 数据发生变化：', newValue);
+// 将 Vuex 中的 JSONData 映射到本地响应式数据，并进行序列化
+const jsonData = computed(() => store.state.JSONData);
+
+let data
+
+// 监听 jsonData 的变化
+watch(jsonData, (newData, oldData) => {
+    console.log('JSONData 发生变化');
+    console.log('新数据：', newData);
+    console.log('旧数据：', oldData);
+
+    data = {
+        "x1": newData[0],
+        "y1": newData[1],
+        "x2": newData[2],
+        "y2": newData[3]
+    }
+    console.log('数据数据数据', data);
 });
 
 // 将 JavaScript 对象序列化为 JSON 字符串
@@ -46,12 +58,19 @@ const btnFunction = () => {
         }
     }
 
-    const data = {
-        "x1": 113.93515161,
-        "y1": 22.5384827,
-        "x2": 113.9366177,
-        "y2": 22.53871508
-    }
+    // const data = {
+    //     "x1": 113.93515161,
+    //     "y1": 22.5384827,
+    //     "x2": 113.9366177,
+    //     "y2": 22.53871508
+    // }
+    // const data = {
+    //     "x1": 113.92989,
+    //     "y1": 22.5361780,
+    //     "x2": 113.934197,
+    //     "y2": 22.540985
+    // }
+
 
     axios.post('/tinterrain/dem2tintiles', data, headerConfig)
         .then(response => {
