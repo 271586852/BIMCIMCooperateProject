@@ -336,6 +336,18 @@ $$
 
 运行上面的 vue3 网页端，输入正确 url 与端口号，即可实现本地与 web 推流。
 
+## 网页截图
+
+![图层管理](../picture/layerManage.png)
+
+![控件管理](../picture/3DTile.png)
+
+![框选瓦片](../picture/Terrain.png)
+
+![tif瓦片](../picture/tif.png)
+
+![量测信息](../picture/measure.png)
+
 ## 更新日志
 
 2024.1.8 新增技术文档
