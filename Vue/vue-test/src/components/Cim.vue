@@ -92,11 +92,8 @@ export default {
           wsPort: "2334", //  选填，客户端开启的通信端口，默认为 2333
           container: "player" //  挂载视频的div ID
         });
-        // console.log("输出api");
         const MegaAPI = api._rawValue;
-        // console.log("api", api);
-        // console.log("api.value", api.value);
-        // console.log("api.", MegaAPI);
+
 
         const resReady = MegaAPI.ready(); //true / false
         console.log("resReady:", resReady);
@@ -119,14 +116,6 @@ export default {
           console.log("相机移动事件开启成功");
         if (MegaAPI.control.enableStudioKeyFrameChanged(true))
           console.log("录播室关键帧事件开启成功");
-        // MegaAPI.measureHandler.start({
-        //         type:0
-        // }).then(res => {
-        //     console.log('面积量测开始start', res)
-        // })
-        // MegaAPI.measureHandler.stop().then(res => {
-        //     console.log('面积量测结束stop', res)
-        // })
 
         // -------------------------------------------------------------------------------------------------
         MegaAPI.onEvent(e => {

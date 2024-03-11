@@ -1,20 +1,23 @@
 <template>
-    <div class="Z-top white-bg" id="container" v-show="uploadDivVisible">
+    <el-dialog v-model="uploadDivVisible" title="解读 Tif 顶点数据 " width="400" draggable :modal="false" id="container" >
         <el-upload class="upload-demo" ref="upload" action="http://localhost/tif/upload" :on-remove="handleRemove"
             :on-change="handleChange" :file-list="fileList" :auto-upload="false" multiple>
             <template #trigger>
-                <el-button size="small" type="primary">选取文件</el-button>
+                <el-button type="primary">选取文件</el-button>
             </template>
-            <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+            <el-button style="margin-left: 10px;" type="success" @click="submitUpload">上传到服务器</el-button>
             <div class="el-upload__tip">只能上传tif文件</div>
-            <br />
-            <el-button @click="btnFunction">传递json</el-button>
-            <br />
-            <el-button @click="GetFunction">Get</el-button>
+            <!-- <el-button @click="GetFunction">Get</el-button> -->
         </el-upload>
-    </div>
+        <template #footer>
+            <div class="upload-demo">
+            <el-button @click="btnFunction" id="elbtn-tif" title="通过页面中的已绘制区域的最大外接矩形解求对应tif的信息，会返回一个顶点信息txt下载地址">获取Bbox的 tif 信息</el-button>
+            <!-- <p class="newp">(通过页面中的已绘制区域的最大外接矩形解求对应tif的信息，会返回一个顶点信息txt下载地址)</p> -->
+        </div>
+        </template>
+    </el-dialog>
 </template>
-  
+
 <script setup>
 import { ref, computed, watch, inject } from 'vue';
 import axios from 'axios';
@@ -196,5 +199,19 @@ const handleChange = (file, files) => {
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* .upload-demo {
+    margin: 20px;
+} */
+
+#elbtn-tif {
+    margin-top: 40px;
+}
+
+.newp {
+    margin: 0;
+    color: #909399;
+    font-size: 13px;
 }
 </style>

@@ -9,16 +9,12 @@ MegaEarth 网页端是基于 Vue3 构建的地图发布与管理平台。该项�
 ## 功能
 
 1. 点击经纬度、视图范围；
-
 2. 面积测量、三角测量；
-
 3. 图层显示隐藏、图层删除；
-
 4. 添加三维组件（POI点、路径、区域）；
-
 5. 添加已在构力bim平台上传并进行了流式转换的建筑模型（以3dtiles格式），并可以实现通过模型构件id进行查询对应构件属性和删除构件
-
 6. 框选Bbox最大外接矩形的terrain顶点坐标信息；
+7. 将Bbox最大外接矩形传递到后端解求tif顶点信息；
 
 ## 技术栈
 
@@ -152,17 +148,34 @@ src
 
 
 
-### 6.获取Bbox区域的terrain顶点坐标信息
+### 6.获取Bbox区域的terrain顶点坐标信息【Terrain】
 
 #### 1）技术路线
 
 ![技术路线](../picture/terrain_process.png)
 
-#### 2）获取Bbox最大矩形框
+#### **2）实现点击框选范围**
 
-由`api.drawHandler`绘制Me ga Earth地球框线信息，在`api.onEvent`中监听事件，返回一个包含经纬度以及高度的对象，遍历对象中的每一个坐标点，计算最大的外接矩形框，返回数组`[topLeft, topRight, bottomLeft, bottomRight]`，同时将矩形框坐标转化为3857投影坐标，用于后续的瓦片顶点范围筛选。
+通过调用SDK的[drawHandler]([drawHandler](http://119.91.33.107/sdk/#/reference/drawHandler))的绘制功能实现在Mega Earth地球绘制点串，然后在`api.onEvent`中监听事件，
+返回一个包含经纬度以及高度的对象（**其中绘制的点数随机，不一定为4**）
 
-#### 3） 获取瓦片的行列号+构建瓦片url数组
+```html
+  api.onEvent(e => {
+    if(e.type === 'DrawResult') { // 绘制事件反馈，需要在api.drawHandler处开启绘制
+        console.log(e.data.lngLatAlts) // 绘制点串，包含经度纬度高度
+      }
+   })
+```
+
+![框选点串](../picture/pointArray.png)
+
+#### 3）获取Bbox最大矩形框
+
+遍历上述点串对象中的每一个坐标点（`只需要其经纬度`），计算最大的外接矩形框，返回数组`[topLeft, topRight, bottomLeft, bottomRight]`，同时将矩形框坐标转化为3857投影坐标，用于后续的瓦片顶点范围筛选。
+
+![Bbox最大矩形框](../picture/MaxRectangle.png)
+
+#### 4） 获取瓦片的行列号+构建瓦片url数组
 
 1. 选取多个x方向和y方向的terrain瓦片进行解析，获得每个瓦片中心坐标（原始为ECEF投影坐标，将其转为经纬度坐标），然后计算每个瓦片的x方向和y方向范围。同时已知原点的经纬度为（-90，-180）；
 
@@ -172,7 +185,7 @@ src
 3. 计算瓦片行列号的方法是将坐标点的经度（longitude）和纬度（latitude）分别除以**瓦片宽度（xsize）和高度（ysize）**得到瓦片编号的x坐标和y坐标；
 4. 将获取得到的行列号数组与最大层级转为url数组，url例如：`http://localhost:3000/DEM/${maxLevel.value}/${item.x}/${item.y}.terrain`,对应本地或远端的terrain文件地址，以供后续解析到正确的瓦片。
 
-#### 4）解析terrain，计算顶点信息
+#### 5）解析terrain，计算顶点信息
 
 解码函数传入一个URL数组，创建一个 promise 链，用于处理每个 URL，对于每个 URL，函数会执行以下操作：
 
@@ -228,6 +241,12 @@ struct QuantizedMeshHeader
 };
 ```
 
+![解读得到的terrain顶点数组](../picture/vertexData.png)
+
+> 其中解读terrain后得到的vertexData数组如上，每3个值代表顶点的（u, v, h）
+
+
+
 其中只有height的范围[`maxHeight`和`minHeight`]是已知的，则height值可直接通过32767进行插值
 
 插值的计算公式为：
@@ -253,18 +272,42 @@ $$
 
 可以发现，若在ECEF下计算瓦片的范围，则无法通过改变的单变量去确定其瓦片的具体变化，不像在WGS84般直观，所以这里采用WGS84经纬度计算瓦片的范围。所以这时可以直接使用上述已经计算的**瓦片宽度（xsize）和高度（ysize）**进行计算瓦片的范围，之后再进行插值计算得到各顶点的经纬度，转为3857投影坐标。
 
-#### 5）筛选框选范围内的顶点与计算顶点相对于整体中心的相对坐标（3857）
+#### 6）筛选框选范围内的顶点与计算顶点相对于整体中心的相对坐标（3857）
 
 1. 通过最大矩形框的3857投影坐标范围去筛选瓦片中的顶点坐标；
 2. 通过最大矩形框的4个顶点坐标解求整体的中心坐标；
 3. 根据顶点的3857投影坐标与整体的中心坐标做差值得到顶点相对于整体中心的坐标。
+
+### 7. 向后端传递框选范围 【Tif】
+
+#### 1）左下角与右上角坐标的传递
+
+在`TileCaculate.vue`中计算得到最大矩形框后，将其得到的**左下角与右上角**的点坐标数值传递到`vuex`中
+`json = [minLon.value, minLat.value, maxLon.value, maxLat.value]`,然后在`TopDiv.vue`中监听**json**的变化，当其数值发生变化后，将其数组中的值赋予给data
+
+```bash
+  watch(jsonData, (newData, oldData) => {
+      data = {
+            "x1": newData[0],
+            "y1": newData[1],
+            "x2": newData[2],
+            "y2": newData[3]
+        }
+   });
+```
+
+#### 2）通过axios库向后端发送post请求
+
+`axios.post('/tinterrain/dem2tintiles', data, headerConfig)`
+
+请求的URL为`/tinterrain/dem2tintiles`，请求体为`data`，请求头为`headerConfig`，当请求成功时（`response.data.code === 1`）通过`response`返回数据与状态信息，包括坐标的文件名，之后通过判断所返回的**文件名是否为空**，非空则构成坐标信息的txt下载链接 `downLoadUrl = 'http://localhost:80/tinterrain/download/' + coordinateFileName`，其中`coordinateFileName`为坐标文件名， 之后调用浏览器进行下载则可以得到框选区域的tif顶点信息。
 
 
 
 ## 实现难点
 
 （1）探求稳定的连接方式与组件挂载方式及值传递展示
-（2）
+（2）解求terrain的准确性
 
 ## 部署方式
 
@@ -276,22 +319,34 @@ $$
    npm install
    ```
 
-   2.启动开发服务器：
+2. 启动开发服务器：
 
    ```bash
    npm run dev
    ```
 
-   3.启动上面所提供的 `http://localhost:端口号`进行页面访问
+3. 启动上面所提供的 `http://localhost:端口号`进行页面访问(**目前已设置端口为5731，浏览器自动打开**)
 
-   - 请确保 Node.js 版本为 20 或以上。
-   - 推荐使用支持 Vue3 的现代浏览器以获取最佳体验。
+- 请确保 Node.js 版本为 20 或以上。
+- 推荐使用支持 Vue3 的现代浏览器以获取最佳体验。
 
 ## 使用方式
 
-确保能正常运行本地的 MegaPublish 客户端，查看项目设置中的 url 与端口号；
+确保能正常运行本地的 MegaPublisher 客户端，查看项目设置中的 url 与端口号，可以自行将软件的url与端口号设置为  `localhost:4000` 和`2333`;
 
 运行上面的 vue3 网页端，输入正确 url 与端口号，即可实现本地与 web 推流。
+
+## 网页截图
+
+![图层管理](../picture/layerManage.png)
+
+![控件管理](../picture/3DTile.png)
+
+![框选瓦片](../picture/Terrain.png)
+
+![tif瓦片](../picture/tif.png)
+
+![量测信息](../picture/measure.png)
 
 ## 更新日志
 
@@ -310,3 +365,5 @@ $$
 2024.2.28 完善解读terrain部分技术文档，与Bim部分文档整合
 
 2024.3.10 完善Bim方面内容、图层信息更新模块
+
+2024.3.11 完善terrain部分文档，包括与后端传值
