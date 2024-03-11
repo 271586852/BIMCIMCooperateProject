@@ -9,16 +9,12 @@ MegaEarth 网页端是基于 Vue3 构建的地图发布与管理平台。该项�
 ## 功能
 
 1. 点击经纬度、视图范围；
-
 2. 面积测量、三角测量；
-
 3. 图层显示隐藏、图层删除；
-
 4. 添加三维组件（POI点、路径、区域）；
-
 5. 添加已在构力bim平台上传并进行了流式转换的建筑模型（以3dtiles格式），并可以实现通过模型构件id进行查询对应构件属性和删除构件
-
 6. 框选Bbox最大外接矩形的terrain顶点坐标信息；
+7. 将Bbox最大外接矩形传递到后端解求tif顶点信息；
 
 ## 技术栈
 
@@ -102,40 +98,84 @@ src
 其中添加3dtileset数据时还要输入用户使用构力控制台应用的clientId、clientsecret和带Bearer头的AccessToken（这个token在请求的headers中添加），这三个数据和模型的url使用了pinia的状态管理，以便bimcontrol.vue去实现一些bim模型相关请求的发送。
 ![Alt text](../picture/tileset-flowchart.png)
 
-### 5.BIM模型的删改查
-单击顶部导航栏"BIM模型操作“后，四个按钮在页面下方出现。目前要通过“查询构件属性”来选中构件：可以通过dbId或者componentId(也是OBVID)两种id进行查询，查询成功后对应构件已选中，单击“显示构件属性”即可显示构件属性窗口，单击“删除构件”即可删除对应构件。
+### 5.BIM 模型的删改查
 
-#### 存在的问题
-- “构件搜索”的接口目前只支持通过dbId进行搜索，“获取指定构件”接口是通过componentId（即OBVID或xdbGuid）进行获取，所以构件的搜索目前只能通过这两个属性实现；
-![Alt text](../picture/search1.png)
+单击顶部导航栏"BIM 模型操作“后，六个按钮在页面下方出现：获取 subDataId、显示构件属性、查询构件属性、修改构件属性、删除构件属性、删除构件。目前要通过“查询构件属性”来选中构件：可以通过 dbId 或者 componentId(也是 OBVID)两种 id 进行查询，查询成功后对应构件已选中，单击“显示构件属性”即可显示构件属性窗口，单击“删除构件”即可删除对应构件。
 
-如图构件搜索接口无法搜索其他属性
-![Alt text](../picture/search2.png)
-- cim平台api存在问题，无法通过单击获取构件id等数据，进而无法实现单击高亮、选中构件并进行对应构件查询
-![Alt text](../picture/api1.png)
-![Alt text](../picture/api2.png)
+#### 1） 获取 subDataId
 
-如图，api返回的结果中tileset数据的id和userData为空，meta为undefined
-![Alt text](../picture/api3.png)
+首先截取用户输入的模型 url 中的一段加上"urn:bimbox.object:translation_result_v2/" 作为 externalId，再发送 GET 请求通过`查询数据子集`接口得到 subDataId。注意在进行其他 bim 模型操作前必须先获取 subDataId，后面功能发送的请求的请求体都需要用到 subDataId。
+![Alt text](../picture/subdataid.png)
 
-- 修改构件属性的接口在文档上的教学不清楚，无法实现
+#### 2) 查询构件属性
+
+用户输入属性名及对应属性值即可查询，要注意是严格匹配的：即属性值的大小写要一致，属性名的每一个数字、符号也要一致。单击“搜索”按钮后，如有符合条件的构件，按键下方会出现以对应构件的 batch：id 为文本的按钮，单击即可选中展示在构件属性信息窗口。此功能通过发送 POST 请求到`构件搜索`接口实现。
+![Alt text](../picture/search.png)
+
+#### 3) 修改/创建构件属性
+
+在键文本框上输入属性名（注意属性名要求和查询时一致），值文本框上输入属性值，单击“确定”按钮即可修改构件属性。当用户想修改、创建多个属性时，单击“+”按钮添加一对键值对文本框；当用户想删除一对键值对文本框，可以单击值文本框后的垃圾桶样式按钮。注意：文本框不能为空。此功能通过发送 POST 请求到`创建或修改构件`接口实现。
 ![Alt text](../picture/modify.png)
+
+#### 4) 删除构件属性
+
+这个的使用方法与修改/创建构建属性一致，但是删除构件属性只需在文本框中输入想要删除的属性的名字即可。此功能通过发送 POST 请求到`创建或修改构件`接口实现（与第三个功能一致）。
+
+#### 5） 删除构件
+
+在直接单击构件选中后（未实现）或查询构件属性窗口选中构件后，此时 componentId 已被保存，单击“删除构件”按钮后即可直接删除构件。此功能通过发送 DELETE 请求到`删除构件`接口实现。
+![Alt text](../picture/delete.png)
+
+#### 6） 显示构件属性
+`构件搜索`接口的响应体中的result属性是一个对象数组，result中的每个对象里的props属性是每个构件的属性。`selectedItemProps`变量负责接收选中的构件的props对象，然后用`groupedProps`计算属性对`selectedItemProps`进行处理。
+![Alt text](../picture/response.png)
+
+- `groupedProps` 是一个计算属性，它的值是一个对象，这个对象的属性是分组后的 `selectedItemProps.value` 对象的属性。`selectedItemProps.value` 对象的每个属性名都是由组名和属性名组成的，中间用冒号 : 分隔。例如，属性名 `Default:NAME` 的组名是 `Default`，属性名是 `NAME`
+- 使用`Object.entries(selectedItemProps.value)` 返回一个数组，数组的每个元素都是一个数组，包含一个属性名和一个属性值。`reduce` 方法将这个数组转换为一个对象，这个对象的属性是分组后的属性。将 `selectedItemProps.value` 对象的属性按照组名进行分组，并返回一个包含分组后的属性的对象
+- 在窗口展示界面的代码中，使用`v-for`指令遍历`groupedProps`对象的每个属性，对于
+每个属性，创建一个 `div` 元素，以使每个组别间有明显分界。这个 `div` 元素包含一个 `h3` 元素和一个 `table` 元素。`h3` 元素显示组别名，`table` 元素用来装载各个组别中不同属性名及其属性值，以便整体对齐，较为美观。
+
+#### `存在的问题`
+
+- cim 平台 api 存在问题，无法通过直接单击构件获取构件 id 等数据，进而无法实现单击高亮、选中构件并进行对应构件查询
+  ![Alt text](../picture/api1.png)
+  ![Alt text](../picture/api2.png)
+
+如图，api 返回的结果中 tileset 数据的 id 和 userData 为空，meta 为 undefined
+![Alt text](../picture/api3.png)
 
 **上述问题均已向构力反映**
 
 
 
-### 6.获取Bbox区域的terrain顶点坐标信息
+### 6.获取Bbox区域的terrain顶点坐标信息【Terrain】
 
 #### 1）技术路线
 
 ![技术路线](../picture/terrain_process.png)
 
-#### 2）获取Bbox最大矩形框
+#### **2）实现点击框选范围**
 
-由`api.drawHandler`绘制Me ga Earth地球框线信息，在`api.onEvent`中监听事件，返回一个包含经纬度以及高度的对象，遍历对象中的每一个坐标点，计算最大的外接矩形框，返回数组`[topLeft, topRight, bottomLeft, bottomRight]`，同时将矩形框坐标转化为3857投影坐标，用于后续的瓦片顶点范围筛选。
+通过调用SDK的[drawHandler]([drawHandler](http://119.91.33.107/sdk/#/reference/drawHandler))的绘制功能实现在Mega Earth地球绘制点串，然后在`api.onEvent`中监听事件，
+返回一个包含经纬度以及高度的对象（**其中绘制的点数随机，不一定为4**）
 
-#### 3） 获取瓦片的行列号+构建瓦片url数组
+```html
+  api.onEvent(e => {
+    if(e.type === 'DrawResult') { // 绘制事件反馈，需要在api.drawHandler处开启绘制
+        console.log(e.data.lngLatAlts) // 绘制点串，包含经度纬度高度
+      }
+   })
+```
+
+![框选点串](../picture/pointArray.png)
+
+#### 3）获取Bbox最大矩形框
+
+遍历上述点串对象中的每一个坐标点（`只需要其经纬度`），计算最大的外接矩形框，返回数组`[topLeft, topRight, bottomLeft, bottomRight]`，同时将矩形框坐标转化为3857投影坐标，用于后续的瓦片顶点范围筛选。
+
+![Bbox最大矩形框](../picture/MaxRectangle.png)
+
+#### 4） 获取瓦片的行列号+构建瓦片url数组
 
 1. 选取多个x方向和y方向的terrain瓦片进行解析，获得每个瓦片中心坐标（原始为ECEF投影坐标，将其转为经纬度坐标），然后计算每个瓦片的x方向和y方向范围。同时已知原点的经纬度为（-90，-180）；
 
@@ -145,7 +185,7 @@ src
 3. 计算瓦片行列号的方法是将坐标点的经度（longitude）和纬度（latitude）分别除以**瓦片宽度（xsize）和高度（ysize）**得到瓦片编号的x坐标和y坐标；
 4. 将获取得到的行列号数组与最大层级转为url数组，url例如：`http://localhost:3000/DEM/${maxLevel.value}/${item.x}/${item.y}.terrain`,对应本地或远端的terrain文件地址，以供后续解析到正确的瓦片。
 
-#### 4）解析terrain，计算顶点信息
+#### 5）解析terrain，计算顶点信息
 
 解码函数传入一个URL数组，创建一个 promise 链，用于处理每个 URL，对于每个 URL，函数会执行以下操作：
 
@@ -201,6 +241,12 @@ struct QuantizedMeshHeader
 };
 ```
 
+![解读得到的terrain顶点数组](../picture/vertexData.png)
+
+> 其中解读terrain后得到的vertexData数组如上，每3个值代表顶点的（u, v, h）
+
+
+
 其中只有height的范围[`maxHeight`和`minHeight`]是已知的，则height值可直接通过32767进行插值
 
 插值的计算公式为：
@@ -226,18 +272,42 @@ $$
 
 可以发现，若在ECEF下计算瓦片的范围，则无法通过改变的单变量去确定其瓦片的具体变化，不像在WGS84般直观，所以这里采用WGS84经纬度计算瓦片的范围。所以这时可以直接使用上述已经计算的**瓦片宽度（xsize）和高度（ysize）**进行计算瓦片的范围，之后再进行插值计算得到各顶点的经纬度，转为3857投影坐标。
 
-#### 5）筛选框选范围内的顶点与计算顶点相对于整体中心的相对坐标（3857）
+#### 6）筛选框选范围内的顶点与计算顶点相对于整体中心的相对坐标（3857）
 
 1. 通过最大矩形框的3857投影坐标范围去筛选瓦片中的顶点坐标；
 2. 通过最大矩形框的4个顶点坐标解求整体的中心坐标；
 3. 根据顶点的3857投影坐标与整体的中心坐标做差值得到顶点相对于整体中心的坐标。
+
+### 7. 向后端传递框选范围 【Tif】
+
+#### 1）左下角与右上角坐标的传递
+
+在`TileCaculate.vue`中计算得到最大矩形框后，将其得到的**左下角与右上角**的点坐标数值传递到`vuex`中
+`json = [minLon.value, minLat.value, maxLon.value, maxLat.value]`,然后在`TopDiv.vue`中监听**json**的变化，当其数值发生变化后，将其数组中的值赋予给data
+
+```bash
+  watch(jsonData, (newData, oldData) => {
+      data = {
+            "x1": newData[0],
+            "y1": newData[1],
+            "x2": newData[2],
+            "y2": newData[3]
+        }
+   });
+```
+
+#### 2）通过axios库向后端发送post请求
+
+`axios.post('/tinterrain/dem2tintiles', data, headerConfig)`
+
+请求的URL为`/tinterrain/dem2tintiles`，请求体为`data`，请求头为`headerConfig`，当请求成功时（`response.data.code === 1`）通过`response`返回数据与状态信息，包括坐标的文件名，之后通过判断所返回的**文件名是否为空**，非空则构成坐标信息的txt下载链接 `downLoadUrl = 'http://localhost:80/tinterrain/download/' + coordinateFileName`，其中`coordinateFileName`为坐标文件名， 之后调用浏览器进行下载则可以得到框选区域的tif顶点信息。
 
 
 
 ## 实现难点
 
 （1）探求稳定的连接方式与组件挂载方式及值传递展示
-（2）
+（2）解求terrain的准确性
 
 ## 部署方式
 
@@ -249,20 +319,20 @@ $$
    npm install
    ```
 
-   2.启动开发服务器：
+2. 启动开发服务器：
 
    ```bash
    npm run dev
    ```
 
-   3.启动上面所提供的 `http://localhost:端口号`进行页面访问
+3. 启动上面所提供的 `http://localhost:端口号`进行页面访问(**目前已设置端口为5731，浏览器自动打开**)
 
-   - 请确保 Node.js 版本为 20 或以上。
-   - 推荐使用支持 Vue3 的现代浏览器以获取最佳体验。
+- 请确保 Node.js 版本为 20 或以上。
+- 推荐使用支持 Vue3 的现代浏览器以获取最佳体验。
 
 ## 使用方式
 
-确保能正常运行本地的 MegaPublish 客户端，查看项目设置中的 url 与端口号；
+确保能正常运行本地的 MegaPublisher 客户端，查看项目设置中的 url 与端口号，可以自行将软件的url与端口号设置为  `localhost:4000` 和`2333`;
 
 运行上面的 vue3 网页端，输入正确 url 与端口号，即可实现本地与 web 推流。
 
@@ -283,3 +353,5 @@ $$
 2024.2.28 完善解读terrain部分技术文档，与Bim部分文档整合
 
 2024.3.10 完善Bim方面内容、图层信息更新模块
+
+2024.3.11 完善terrain部分文档，包括与后端传值

@@ -11,7 +11,7 @@
         <!-- ------图层控件板块原始界面------------>
         <div>
             <div id="addLayerWindow">
-                <el-button round id="addLayerButton" @click="showAddDropdown()">添加图层</el-button>
+                <el-button round id="addLayerButton" @click="showAddDropdown()" type="primary">添加控件</el-button>
             </div>
             <div id="dropdown" style="display: none;">
                 <div id="dataset-window">
@@ -55,31 +55,31 @@
     </div>
 
     <!-- 添加3DTiles数据集窗口 -->
-    <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 添加label窗口 -->
     <Label :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加marker窗口 -->
-    <Marker :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <Marker :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 添加WaveDecal窗口 -->
-    <WaveDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <WaveDecal :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 添加ODLine窗口 -->
-    <ODLine :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <ODLine :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 添加Polyline窗口 -->
-    <Polyline :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <Polyline :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 添加Walls窗口 -->
-    <Wall :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <Wall :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 添加GeometryDecal窗口 -->
-    <GeometryDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <GeometryDecal :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 添加TextureDecal窗口 -->
-    <TextureDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <TextureDecal :api="props.api" :fetchEntityTree="fetchEntityTree"/>
 
     <!-- 图层管理模块 ---------->
 
@@ -91,7 +91,7 @@
             <div class="layer-control" v-show="isLayerControlVisible" @mousedown="dragMouseDown" ref="layerControlRef">
                 <h3 class="no-padding center-title">图层管理</h3>
                 <ul class="layer-list" v-for="layer in layers" :key="layer.id" :id="layer.id">
-                    <li class="layer-item" :id="layer.id" :key="layer.id">
+                    <li class="layer-item" :id="layer.id" :key="layer.id" title="双击可将视图切换至合适位置">
                         <el-checkbox type="checkbox" :id="layer.name" v-model="layer.visible"
                             @change="toggleLayerVisibility(layer)" />
                         <span class="layer-name" @click="toggleCollapse(layer.id)" :for="layer.name"
@@ -107,7 +107,7 @@
                             text>Delete</el-button>
                         <ul v-if="layer.overlays" :class="{ 'collapse': isCollapsed[layer.id] }">
                             <li v-for="overlay in layer.overlays" :key="overlay.id" class="overlay-item"
-                                style="margin-left: 20px;">
+                                style="margin-left: 20px;" title="双击可将视图切换至合适位置">
                                 <el-checkbox type="checkbox" :id="overlay.name" v-model="overlay.visible"
                                     @change="toggleOverlayVisibility(layer.id, overlay)" />
                                 <span class="layer-name" :for="overlay.name" @dblclick="flyToLayer(layer.id)">{{
@@ -271,10 +271,10 @@ const showAddDropdown = () => {
     if (dropdown.style.display == "none") {
         dropdown.style.display = "block";
         //使得addLayerWindow按钮中的添加图层文字变为隐藏控件
-        document.getElementById("addLayerButton").innerHTML = "隐藏控件";
+        document.getElementById("addLayerButton").innerHTML = "隐藏窗口";
     } else {
         dropdown.style.display = "none";
-        document.getElementById("addLayerButton").innerHTML = "添加图层";
+        document.getElementById("addLayerButton").innerHTML = "添加控件";
     }
 }
 

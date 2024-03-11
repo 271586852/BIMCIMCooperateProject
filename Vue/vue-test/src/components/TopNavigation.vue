@@ -28,13 +28,13 @@
         <el-icon>
           <i class="iconfont icon-tuceng" />
         </el-icon>
-        <span>瓦片管理</span>
+        <span>图层控件</span>
       </el-menu-item>
       <el-menu-item index="8" @click="showUpload">
         <el-icon>
           <i class="iconfont icon-tuceng" />
         </el-icon>
-        <span>上传瓦片</span>
+        <span>Tif瓦片</span>
       </el-menu-item>
       <el-menu-item index="4" @click="showTerrainInfo">
         <el-icon>
@@ -81,13 +81,13 @@
       </el-sub-menu>-->
 
       <div class="flex-grow" />
-      <el-menu-item index="8" @click="clickUser">
+      <el-menu-item index="9" @click="clickUser">
         <el-icon>
           <User />
         </el-icon>
         <span>用户中心</span>
       </el-menu-item>
-      <el-menu-item index="9">
+      <el-menu-item index="10">
         <el-icon>
           <Tools />
         </el-icon>
@@ -142,7 +142,7 @@
     </div>
 
     <!-- 计算框选区域瓦片信息 -->
-    <TileCaculate style="float: right;" ref="refTile" />
+    <TileCaculate ref="refTile" />
     
     <!-- 上传tif -->
     <TopDiv />

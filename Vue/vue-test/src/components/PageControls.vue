@@ -8,7 +8,7 @@
         <i class="iconfont icon-mianji icon-right" @click="areaIconClick" @contextmenu.prevent="stopMeasure" title="测面积" />
         <i class="iconfont icon-celiang icon-right" @click="sanjiaoIconClick" @contextmenu.prevent="stopMeasure"
             title="测距离" />
-        <i class="icon-right" @click="selectAreaStart" @contextmenu.prevent="selectAreaEnd"><el-icon>
+        <i class="icon-right" @click="selectAreaStart" @contextmenu.prevent="selectAreaEnd" title="框选区域"><el-icon>
                 <CirclePlus />
             </el-icon></i>
     </div>
