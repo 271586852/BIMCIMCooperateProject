@@ -109,8 +109,14 @@ src
 
 #### 2) 查询构件属性
 
-用户输入属性名及对应属性值即可查询，要注意是严格匹配的：即属性值的大小写要一致，属性名的每一个数字、符号也要一致。单击“搜索”按钮后，如有符合条件的构件，按键下方会出现以对应构件的 batch：id 为文本的按钮，单击即可选中展示在构件属性信息窗口。此功能通过发送 POST 请求到`构件搜索`接口实现。
+用户输入属性名及对应属性值即可查询，单击“搜索”按钮后，如有符合条件的构件，按键下方会出现以对应构件的 batch：id 为文本的按钮，单击即可选中展示在构件属性信息窗口。此功能通过发送 POST 请求到`构件搜索`接口实现。
 ![Alt text](../picture/search.png)
+
+要注意：
+1. 是严格匹配的：即属性值的大小写要一致，属性名的每一个数字、符号也要一致;
+2. 属性含有组别.冒号前为组别名,冒号后为组别下的属性名.如图：Default:START_Z这个属性的组别是Default,组别下的属性名为START_Z,在搜索时要输入完全才可以成功查询.
+![Alt text](../picture/attr1.png)
+![Alt text](../picture/attr2.png)
 
 #### 3) 修改/创建构件属性
 
@@ -141,10 +147,12 @@ src
   ![Alt text](../picture/api1.png)
   ![Alt text](../picture/api2.png)
 
-如图，api 返回的结果中 tileset 数据的 id 和 userData 为空，meta 为 undefined
+- 如图，api 返回的结果中 tileset 数据的 id 和 userData 为空，meta 为 undefined
 ![Alt text](../picture/api3.png)
 
-**上述问题均已向构力反映**
+- 目前只能返回模型的dbid,但是要完成修改构件属性和删除构件的操作应该要obvid.目前构力文档删除了这两个接口的介绍
+
+
 
 
 
