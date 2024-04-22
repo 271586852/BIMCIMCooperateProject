@@ -28,6 +28,8 @@ import BimControl from "./BimControl.vue";
 import { onMounted, ref, watch, computed } from "vue";
 import { useStore } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
+import { useBimStore } from '../store/bim';
+import { storeToRefs } from 'pinia';
 import "/src/assets/me.min.js";
 
 
@@ -36,6 +38,9 @@ import "/src/assets/me.min.js";
 // 从vuex数据仓库里面取数据
 const store = useStore();
 
+// 从bimstore数据仓库里面取数据
+const Bimstore = useBimStore()
+const {clickComponent} = storeToRefs(Bimstore)
 
 const ref_inside = ref(null); // 子组件
 
@@ -133,13 +138,7 @@ api.on("close", e => {
 
 // 2.三维系统内置的交互事件监听器
 // 开启事件
-api.control.enableLeftMouseClick(true, {
-  nodeKey: 'id',
-  color: 'rgba(0, 124, 255, 0.8)',
-  transparent: 1,
-  isHighlight: true,
-  featureIDSetIndex: 0
-});  //开启鼠标左键点击查询
+api.control.enableLeftMouseClick(true);  //开启鼠标左键点击查询
 api.control.enableCameraChanged(true);   //
 api.control.enableStudioKeyFrameChanged(true);
 if (api.control.enableLeftMouseClick(true)) {
@@ -159,9 +158,14 @@ api.onEvent(e => {
     // 点击事件反馈，需要在api.control处开启点击事件
     store.commit("updateLocation", e.data.location);
 
+    console.log("点击查询构件信息"); 
     console.log(e.data.entity) // entity相关
     console.log(e.data.entity.id) // 目前仅支持Tileset数据id的查询
     console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
+    // 解析 e.data.entity.meta 字符串，获取 dbId 的值
+    let meta = JSON.parse(e.data.entity.meta);
+    Bimstore.clickComponent = meta.dbId;
+    console.log("Bimstore.clickComponent", Bimstore.clickComponent);
     console.log(e.data.entity.userData) // 所点击的Tileset数据所携带的userData
   }
 

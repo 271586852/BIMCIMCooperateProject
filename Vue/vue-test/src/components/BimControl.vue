@@ -92,7 +92,7 @@
 
 
 <script setup>
-import { defineProps, ref, computed, onMounted } from 'vue'
+import { defineProps, ref, computed, onMounted, watchEffect, watch } from 'vue'
 import { useBimStore } from '../store/bim';
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
@@ -102,11 +102,11 @@ import { Delete, Plus } from '@element-plus/icons-vue'
 
 
 const Bimstore = useBimStore()
-const { isBim, clientId, clientSecret, layerUrl, BeareraccessToken } = storeToRefs(Bimstore)
+const { isBim, clientId, clientSecret, layerUrl, BeareraccessToken, clickComponent } = storeToRefs(Bimstore)
 const host = "https://api.cloud.pkpm.cn"
 const subDataId = ref('')
 const externalId = ref('')
-// const dbId = ref('')
+const ClickdbId = ref('')
 const componentId = ref('')
 
 // 从 localStorage 中读取值（防止刷新页面后数据丢失）
@@ -124,10 +124,54 @@ const Bimprop = defineProps({
     }
 })
 
+let selectedItemProps = ref({});
+const ClickQueryResponse = ref(null);
+watch(clickComponent, async (newValue, oldValue) => {
+    if (newValue) {
+        ClickdbId.value = newValue;
+        console.log('点击构件dbid变化:', ClickdbId.value, newValue);
+
+        let Clickurl
+        Clickurl = host + "/bims-api/bims/v2/subdatas/" + subDataId.value + "/components/search";
+
+        const ClickrequestBody = {
+            propsConditions: [
+                {
+                    key: 'batch:id',
+                    operateSymbol: 4,
+                    value: ClickdbId.value
+                }
+            ]
+        };
+
+        try {
+            ClickQueryResponse.value = await axios.post(Clickurl, ClickrequestBody, {
+                headers: {
+                    Authorization: BeareraccessToken.value
+                }
+            })
+
+            // 请求成功，获取返回的数据
+            ElMessage.success("点击查询到符合条件的构件")
+            console.log("点击查询到符合条件的构件", ClickQueryResponse.value.data)
+            console.log(ClickQueryResponse.value.data.result)
+
+        } catch (error) {
+            // 请求失败，打印错误消息
+            ElMessage.error("没有查询到符合条件的构件")
+            console.log('没有查询到符合条件的构件:', error)
+        }
+
+        selectedItemProps.value = ClickQueryResponse.value.data.result[0].props;
+        console.log('selectedItemProps:', selectedItemProps.value);  // 添加日志
+    }
+});
+
+
 /**
- * 获取subDataId
+ *  获取subDataId
  
- */
+*/
 const GetsubDataId = async () => {
     console.log('layerUrl', layerUrl.value)
     const parts = layerUrl.value.split('/')
@@ -244,7 +288,7 @@ const QueryAttr = async () => {
     console.log('属性名', QueryAttrName.value)
     console.log('属性值', QueryAttrValue.value)
 
-    
+
     let url
     url = host + "/bims-api/bims/v2/subdatas/" + subDataId.value + "/components/search";
 
@@ -270,7 +314,7 @@ const QueryAttr = async () => {
         ElMessage.success("查询到符合条件的构件")
         console.log("查询到符合条件的构件", QueryResponse.value.data)
         console.log(QueryResponse.value.data.result)
-        
+
     } catch (error) {
         // 请求失败，打印错误消息
         ElMessage.error("没有查询到符合条件的构件")
@@ -290,7 +334,7 @@ const OpenAttrWindow = () => {
     isAttr.value = !isAttr.value
     console.log('打开构件属性窗口')
 }
-let selectedItemProps = ref({});
+
 let QueResListIndex = ref(null);
 
 const ClickBatchId = (QRindex) => {
@@ -315,9 +359,9 @@ const ClickBatchId = (QRindex) => {
 };
 
 const groupedProps = computed(() => {
-    console.log('groupedProps is being computed');  // 添加日志
+    console.log('groupedProps is being computed计算grouopedProps');  // 添加日志
 
-    if (!QueryResponse.value || !selectedItemProps.value) {
+    if ((!QueryResponse.value && !selectedItemProps.value) || (!ClickQueryResponse.value && !selectedItemProps.value)) {
         return {};
     }
 
@@ -327,10 +371,10 @@ const groupedProps = computed(() => {
             groups[groupName] = {};
         }
         groups[groupName][propName] = value;
+        console.log('groupedProps计算完毕');  // 添加日志
         return groups;
     }, {});
 
-    console.log('groupedProps:', groupedProps.value);  // 添加日志
 });
 
 
