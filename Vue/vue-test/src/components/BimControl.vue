@@ -155,7 +155,7 @@ watch(clickComponent, async (newValue, oldValue) => {
             ElMessage.success("点击查询到符合条件的构件")
             console.log("点击查询到符合条件的构件", ClickQueryResponse.value.data)
             console.log(ClickQueryResponse.value.data.result)
-
+            componentId.value = ClickQueryResponse.value.data.result[0].xdbGuid
         } catch (error) {
             // 请求失败，打印错误消息
             ElMessage.error("没有查询到符合条件的构件")
