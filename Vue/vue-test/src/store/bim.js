@@ -9,7 +9,8 @@ export const useBimStore = defineStore('bim', () => {
     const clientSecret = ref("")
     const layerUrl = ref("")
     const BeareraccessToken = ref("")
-    const clickComponent = ref("")
+    const GouLidbid = ref("")
+    const NotGLmeta = ref("")
 
     // action
     const changeisBim = () => {
@@ -24,7 +25,8 @@ export const useBimStore = defineStore('bim', () => {
         clientSecret,
         layerUrl,
         BeareraccessToken,
-        clickComponent,
+        GouLidbid,
+        NotGLmeta,
         changeisBim
     }
 })

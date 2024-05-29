@@ -13,11 +13,23 @@
     <!-- 构件属性信息窗口 -->
     <div class="Attrwindow" v-if="isAttr">
         <h2 style="text-align: center;">对象属性</h2>
-        <div v-for="(group, groupName) in groupedProps" :key="groupName">
-            <h3>{{ groupName }}</h3>
-            <table>
+        <div v-if="GouLidbid">
+            <div v-for="(group, groupName) in groupedProps" :key="groupName">
+                <h3>{{ groupName }}</h3>
+                <table>
+                    <tbody>
+                        <tr v-for="(value, propName) in group" :key="propName">
+                            <td style="font-weight: bold;">{{ propName }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div v-else>
+            <table class="AttrTable">
                 <tbody>
-                    <tr v-for="(value, propName) in group" :key="propName">
+                    <tr v-for="(value, propName) in NotGLmeta" :key="propName">
                         <td style="font-weight: bold;">{{ propName }}</td>
                         <td>{{ value }}</td>
                     </tr>
@@ -25,7 +37,6 @@
             </table>
         </div>
     </div>
-
 
     <!-- 搜索构件属性窗口 -->
     <div>
@@ -102,7 +113,7 @@ import { Delete, Plus } from '@element-plus/icons-vue'
 
 
 const Bimstore = useBimStore()
-const { isBim, clientId, clientSecret, layerUrl, BeareraccessToken, clickComponent } = storeToRefs(Bimstore)
+const { isBim, clientId, clientSecret, layerUrl, BeareraccessToken, GouLidbid, NotGLmeta } = storeToRefs(Bimstore)
 const host = "https://api.cloud.pkpm.cn"
 const subDataId = ref('')
 const externalId = ref('')
@@ -126,7 +137,17 @@ const Bimprop = defineProps({
 
 let selectedItemProps = ref({});
 const ClickQueryResponse = ref(null);
-watch(clickComponent, async (newValue, oldValue) => {
+
+// 监听NotGLmeta的变化(非构力模型点击查询)
+watch(NotGLmeta, () => {
+    if (!GouLidbid.value) {
+        // selectedItemProps.value = NotGLmeta.value;
+        console.log('点击查询非构力模型构件成功:', NotGLmeta.value.sid);  // 添加日志
+    }
+})
+
+// 监听GouLidbid的变化(构力模型点击查询)
+watch(GouLidbid, async (newValue, oldValue) => {
     if (newValue) {
         ClickdbId.value = newValue;
         console.log('点击构件dbid变化:', ClickdbId.value, newValue);
@@ -152,8 +173,8 @@ watch(clickComponent, async (newValue, oldValue) => {
             })
 
             // 请求成功，获取返回的数据
-            ElMessage.success("点击查询到符合条件的构件")
-            console.log("点击查询到符合条件的构件", ClickQueryResponse.value.data)
+            ElMessage.success("点击查询到符合条件的构件（构力模型）")
+            console.log("点击查询到符合条件的构件（构力模型）", ClickQueryResponse.value.data)
             console.log(ClickQueryResponse.value.data.result)
             componentId.value = ClickQueryResponse.value.data.result[0].xdbGuid
         } catch (error) {
@@ -410,6 +431,34 @@ const DeleteComponent = async () => {
 
 }
 
+// 根据componentId查询构件属性(修改和删除构件属性时更新对应构件属性使用)
+const QueryByComponetId = async () => {
+    if (componentId.value === '' || subDataId.value === '') {
+        ElMessage.error("请先通过查询选中构件")
+        return
+    }
+    else {
+        const QueryUrl = host + "/bims-api/bims/v2/subdatas/" + subDataId.value + "/components/" + componentId.value
+        try {
+            const QueryResponse = await axios.get(QueryUrl, {
+                headers: {
+                    Authorization: BeareraccessToken.value
+                }
+            })
+
+            // 请求成功，获取返回的数据
+            ElMessage.success("根据ComponetId查询构件属性成功")
+            console.log('根据ComponetId查询构件属性成功:', QueryResponse.data)
+            selectedItemProps.value = QueryResponse.data.result.props
+        } catch (error) {
+            // 请求失败，打印错误消息
+            ElMessage.error("查询构件属性失败")
+            console.log('查询构件属性失败:', error)
+        }
+    }
+}
+
+
 
 /**
  * 修改构件属性相关
@@ -475,10 +524,11 @@ const ModifyCompoAttr = async () => {
 
             ElMessage.success("修改构件属性成功")
             console.log("修改构件属性成功", ModifyResponse.data)
-            selectedItemProps.value = ModifyResponse.data.result.props
+            // selectedItemProps.value = ModifyResponse.data.result.props
 
             //刷新构件属性
-            QueryAttr()
+            // QueryAttr()
+            QueryByComponetId()
 
         } catch (error) {
             // 请求失败，打印错误消息
@@ -542,10 +592,11 @@ const deleteAttr = async () => {
 
             ElMessage.success("删除构件属性成功")
             console.log("删除构件属性成功", DelAttrResponse.data)
-            selectedItemProps.value = DelAttrResponse.data.result.props
+            // selectedItemProps.value = DelAttrResponse.data.result.props
 
             //刷新构件属性
-            QueryAttr()
+            // QueryAttr()
+            QueryByComponetId()
 
         } catch (error) {
             // 请求失败，打印错误消息
@@ -621,7 +672,7 @@ const deleteAttr = async () => {
     height: 250px;
     /* 你可以根据需要设置这个值 */
     position: absolute;
-    left: 430px;
+    left: 490px;
     bottom: 80px;
     border: 1px;
     background-color: #f9f9f9;
@@ -656,7 +707,7 @@ const deleteAttr = async () => {
 }
 
 .Attrwindow {
-    width: 398px;
+    width: 450px;
     height: 800px;
     /* 你可以根据需要设置这个值 */
     position: absolute;
@@ -698,5 +749,14 @@ const deleteAttr = async () => {
     /* 设置边框半径 */
     padding: 10px;
     /* 设置内边距 */
+}
+
+.AttrTable {
+    border-collapse: collapse;
+}
+
+.AttrTable td {
+    border: 1px solid black;
+    padding: 5px;
 }
 </style>

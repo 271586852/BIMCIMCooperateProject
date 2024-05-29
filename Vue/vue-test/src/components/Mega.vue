@@ -40,7 +40,7 @@ const store = useStore();
 
 // 从bimstore数据仓库里面取数据
 const Bimstore = useBimStore()
-const {clickComponent} = storeToRefs(Bimstore)
+const {GouLidbid,NotGLmeta} = storeToRefs(Bimstore)
 
 const ref_inside = ref(null); // 子组件
 
@@ -164,8 +164,10 @@ api.onEvent(e => {
     console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
     // 解析 e.data.entity.meta 字符串，获取 dbId 的值
     let meta = JSON.parse(e.data.entity.meta);
-    Bimstore.clickComponent = meta.dbId;
-    console.log("Bimstore.clickComponent", Bimstore.clickComponent);
+    Bimstore.GouLidbid = meta.dbId;
+    Bimstore.NotGLmeta = meta;
+    console.log("Bimstore.GouLidbid", Bimstore.GouLidbid);
+    console.log("Bimstore.NotGLmeta", Bimstore.NotGLmeta);
     console.log(e.data.entity.userData) // 所点击的Tileset数据所携带的userData
   }
 
