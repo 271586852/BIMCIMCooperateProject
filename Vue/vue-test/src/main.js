@@ -9,6 +9,7 @@ import './assets/iconfont.css'    // 引入阿里云字体图标css
 // import router from './router'
 import { createPinia } from 'pinia'
 // import axios from 'axios'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 
 

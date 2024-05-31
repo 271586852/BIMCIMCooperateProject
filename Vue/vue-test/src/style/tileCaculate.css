@@ -1,0 +1,96 @@
+.scrollbar-demo-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    margin: 10px;
+    text-align: center;
+    border-radius: 4px;
+    background: var(--el-color-primary-light-9);
+    color: var(--el-color-primary);
+
+}
+
+.info-div {
+    width: 620px;
+    height: 630px;
+    position: relative;
+    top: 100px;
+    margin-right: 50%;
+    border: 3px;
+    background-color: #EBEDF0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+    justify-content: center;
+    /* 水平居中 */
+    align-items: center;
+    /* 垂直居中 */
+}
+
+.rich-text {
+    position: relative;
+    margin: auto;
+    padding: 13px;
+    width: 90%;
+    height: 300px;
+    overflow-y: auto;
+    /* background-color: #f9f9f9; */
+    border: 2px solid #909399;
+    /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
+}
+
+.text-p {
+    /* margin-bottom: 2px; */
+    /* 调整行间距大小，可以根据需要进行调整 */
+    /* margin-top: 0; */
+
+}
+
+.item-center {
+    text-align: center;
+    margin: auto;
+}
+
+#export-div {
+    position: absolute;
+    bottom: 7px;
+    width: 90%;
+    margin-top: 5px;
+}
+
+.closeBtn {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    cursor: pointer;
+}
+
+.closeBtn:hover {
+    color: red;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.text-p {
+    white-space: pre-wrap;
+    /* 保证长文本自动换行 */
+    word-wrap: break-word;
+    /* 强制长单词或URL地址换行 */
+    overflow-wrap: break-word;
+    /* 强制长单词或URL地址换行 */
+}
+
+.custom-dialog {
+    z-index: 1050;
+    /* 调整z-index确保对话框在其他元素之上 */
+}
+
+.dialog_class {
+    pointer-events: none;
+}
+
+.el-dialog {
+    pointer-events: auto;
+}

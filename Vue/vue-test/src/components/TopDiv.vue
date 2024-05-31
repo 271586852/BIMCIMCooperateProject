@@ -1,5 +1,6 @@
 <template>
-    <el-dialog v-model="uploadDivVisible" title="解读 Tif 顶点数据 " width="400" draggable :modal="false" id="container" >
+    <el-dialog v-model="uploadDivVisible" title="解读 Tif 顶点数据 " width="400" draggable :modal="false" id="container"
+        :close-on-click-modal="false" style="border: 2px solid #606266;" modal-class="dialog_class">
         <el-upload class="upload-demo" ref="upload" action="http://localhost/tif/upload" :on-remove="handleRemove"
             :on-change="handleChange" :file-list="fileList" :auto-upload="false" multiple>
             <template #trigger>
@@ -11,9 +12,10 @@
         </el-upload>
         <template #footer>
             <div class="upload-demo">
-            <el-button @click="btnFunction" id="elbtn-tif" title="通过页面中的已绘制区域的最大外接矩形解求对应tif的信息，会返回一个顶点信息txt下载地址">获取Bbox的 tif 信息</el-button>
-            <!-- <p class="newp">(通过页面中的已绘制区域的最大外接矩形解求对应tif的信息，会返回一个顶点信息txt下载地址)</p> -->
-        </div>
+                <el-button @click="btnFunction" id="elbtn-tif"
+                    title="通过页面中的已绘制区域的最大外接矩形解求对应tif的信息，会返回一个顶点信息txt下载地址">获取Bbox的 tif 信息</el-button>
+                <!-- <p class="newp">(通过页面中的已绘制区域的最大外接矩形解求对应tif的信息，会返回一个顶点信息txt下载地址)</p> -->
+            </div>
         </template>
     </el-dialog>
 </template>
@@ -27,10 +29,16 @@ import { useStore } from "vuex";
 const store = useStore();
 
 // 仓库数据
-const uploadDivVisible = computed(() => store.state.UploadDivVisible); // 上传tif
+// const uploadDivVisible = computed(() => store.state.UploadDivVisible); // 上传tif
+const uploadDivVisible = ref(false)
 
 // 将 Vuex 中的 JSONData 映射到本地响应式数据，并进行序列化
 const jsonData = computed(() => store.state.JSONData);
+
+// 改变窗口显示与隐藏
+const uploadDivVisibleFunction = () => {
+    uploadDivVisible.value = !uploadDivVisible.value;
+};
 
 let data
 
@@ -178,6 +186,12 @@ const handleRemove = (file, files) => {
 const handleChange = (file, files) => {
     fileList.value = files;
 };
+
+// 暴露给父组件的方法
+defineExpose({
+    uploadDivVisibleFunction,
+})
+
 </script>
 
 <style scoped>
@@ -213,5 +227,12 @@ const handleChange = (file, files) => {
     margin: 0;
     color: #909399;
     font-size: 13px;
+}
+.dialog_class {
+    pointer-events: none;
+}
+
+.el-dialog {
+    pointer-events: auto;
 }
 </style>

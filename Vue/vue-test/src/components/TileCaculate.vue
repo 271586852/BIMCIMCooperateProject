@@ -3,25 +3,22 @@
  * @LastEditTime: 1.20
  -->
 <template>
-    <el-dialog v-model="showInfo" title="Terrain瓦片顶点相对坐标" width="500" draggable :modal="false" align-left>
-        <el-scrollbar height="500px" class="rich-text">
-            <p class="text-p">EPSG3857</p>
-            <p class="text-p">{{ centerBbox.x }},{{ centerBbox.y }}</p>
-            <p class="text-p">{{ epsg3857CoordsCenter[0] }},{{ epsg3857CoordsCenter[1] }}</p>
-            <!-- <p class="text-p" v-for="(obj, index) in relativeCoordinatesArray" :key="index">
-            <p class="text-p" v-for="(point, pointIndex) in obj" :key="pointIndex">
-                {{ point.x }},{{ point.y }},{{ point.z }}<br />
-            </p>
-            </p> 原来的9级-->
-            <p class="text-p" v-for="(point, pointIndex) in relativeCoordinatesArray" :key="pointIndex">
+    <el-dialog v-model="showInfo" title="Terrain瓦片顶点相对坐标" width="400" :close-on-click-modal="false" draggable
+        :modal="false" :append-to-body="false" :modal-append-to-body='false' align-left
+        class="custom-dialog border-white" style="border: 2px solid #606266;" modal-class="dialog_class">
+        <el-scrollbar height="300px" class="rich-text">
+            <el-text class="text-p">EPSG3857</el-text><br />
+            <el-text class="text-p">{{ centerBbox.x }},{{ centerBbox.y }}</el-text><br />
+            <el-text class="text-p">{{ epsg3857CoordsCenter[0] }},{{ epsg3857CoordsCenter[1] }}</el-text><br />
+            <el-text class="text-p" v-for="(point, pointIndex) in relativeCoordinatesArray" :key="pointIndex">
                 {{ formatNumber(point.x) }},{{ formatNumber(point.y) }},{{ formatNumber(point.z) }}<br />
-            </p>
+            </el-text>
         </el-scrollbar>
         <template #footer>
             <div class="dialog-footer">
                 <div class="item-center " id="export-div">
-            <el-button round size="large" @click="exportTxt">导 出</el-button>
-        </div>
+                    <el-button round size="large" @click="exportTxt">导 出</el-button>
+                </div>
             </div>
         </template>
     </el-dialog>
@@ -31,7 +28,7 @@
 import { ref, computed, watch, onMounted, provide } from 'vue';
 import { useStore } from "vuex";
 import axios from 'axios';
-import saveAS from 'file-saver';
+// import saveAS from 'file-saver';
 // 在浏览器环境中导入 file-saver
 import { saveAs } from 'file-saver';
 import decode, { DECODING_STEPS } from '@here/quantized-mesh-decoder';// 导入 quantized-mesh-decoder 库
@@ -77,10 +74,14 @@ const XYsizeRangeArray = <any>[]; //14级瓦片计算范围
 // 定义变量来存储wgs84Coords数据
 let wgs84SameXCoords = [];
 let wgs84SameYCoords = [];
-let epsg3857CoordsCenter = ref();//最大矩形框中心的3857坐标
-let relativeCoordinatesArray = ref();//顶点相对矩形框中心的3857相对坐标
+// let epsg3857CoordsCenter = ref();//最大矩形框中心的3857坐标
+// let relativeCoordinatesArray = ref();//顶点相对矩形框中心的3857相对坐标
 let epsg3857terrainCenter = ref();//瓦片中心的3957坐标数组
-let centerBbox = ref() //最大矩形框的经纬度坐标
+// let centerBbox = ref() //最大矩形框的经纬度坐标
+// 初始化变量
+const centerBbox = ref({ x: 0, y: 0 });
+const epsg3857CoordsCenter = ref([0, 0]);
+const relativeCoordinatesArray = ref<Array<{ x: number, y: number, z: number }>>([]);
 
 const SZU = true
 //最大矩形框的3857范围
@@ -1200,7 +1201,7 @@ watch(TileInfo, (newTileInfo, oldTileInfo) => {
         console.log('y的最大值:', minMaxValues.maxY);
 
 
-        centerBbox.value = calculateCenter(maxRectangle);
+        centerBbox.value = calculateCenter(maxRectangle)!;
         console.log('矩形框中心点：', centerBbox.value);
         // 转换坐标
         epsg3857CoordsCenter.value = transformTo3857(centerBbox.value);
@@ -1361,79 +1362,4 @@ defineExpose({
 
 </script>
 
-<style scoped>
-.scrollbar-demo-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 50px;
-    margin: 10px;
-    text-align: center;
-    border-radius: 4px;
-    background: var(--el-color-primary-light-9);
-    color: var(--el-color-primary);
-
-}
-
-.info-div {
-    width: 620px;
-    height: 630px;
-    position: relative;
-    top: 100px;
-    margin-right: 50%;
-    border: 3px;
-    background-color: #EBEDF0;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 10;
-    justify-content: center;
-    /* 水平居中 */
-    align-items: center;
-    /* 垂直居中 */
-}
-
-.rich-text {
-    position: relative;
-    margin: auto;
-    padding: 13px;
-    width: 95%;
-    height: 500px;
-    overflow-y: auto;
-    background-color: #f9f9f9;
-    border: 2px solid #909399;
-    /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
-}
-
-.text-p {
-    margin-bottom: 2px;
-    /* 调整行间距大小，可以根据需要进行调整 */
-    margin-top: 0;
-
-}
-
-.item-center {
-    text-align: center;
-    margin: auto;
-}
-
-#export-div {
-    position: absolute;
-    bottom: 7px;
-    width: 90%;
-    margin-top: 5px;
-}
-
-.closeBtn {
-    position: absolute;
-    right: 20px;
-    top: 15px;
-    cursor: pointer;
-}
-
-.closeBtn:hover {
-    color: red;
-    font-size: 17px;
-    font-weight: 500;
-}
-</style>
+<style src="@/style/tileCaculate.css"></style>

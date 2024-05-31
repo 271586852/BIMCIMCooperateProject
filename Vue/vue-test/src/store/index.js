@@ -24,7 +24,7 @@ export default createStore({
         LayerControlVisible: false,
 
         //上传tif
-        UploadDivVisible:false,
+        UploadDivVisible: false,
         // 传递json
         JSONData: {},
     },
@@ -81,8 +81,8 @@ export default createStore({
             state.loadMega = data;
         },
         // 图层中心
-        updateLayerControlVisible(state, data) {
-            state.LayerControlVisible = data;
+        updateLayerControlVisible(state) {
+                state.LayerControlVisible = !state.LayerControlVisible;
         },
         //上传tif
         updateUploadDivVisible(state, data) {
@@ -103,6 +103,6 @@ export default createStore({
         toggleDropdown({ commit }) {
             commit('toggleDropdown');
             console.log('已调用toggleDropdown');
-          },
+        },
     }
 })

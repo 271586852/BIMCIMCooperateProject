@@ -114,8 +114,8 @@ const layers222 = [
 
 // 初始化api
 const api = new me.MegaEarthApi({
-  url: 'localhost:4000', //  客户端所在主机ip，若是本机连接可填 localhost
-  wsPort: '2333', //  选填，客户端开启的通信端口，默认为 2333
+  url: 'localhost:4001', //  客户端所在主机ip，若是本机连接可填 localhost
+  wsPort: '2334', //  选填，客户端开启的通信端口，默认为 2333
   container: "player" //  挂载视频的div ID
 });
 
@@ -246,6 +246,15 @@ api.weather.set(weather1);
 //设置时间
 let time = 11.5;
 api.weather.setTime(time);
+
+// 显示/隐藏帧率信息，无参数
+const toggleFPS = ()=>{
+  api.toggleFps().then(res => {
+    console.log('帧率信息:',res)
+  })
+}
+toggleFPS();
+
 
 // 输出图层
 // 获取entity实体树相关信息
