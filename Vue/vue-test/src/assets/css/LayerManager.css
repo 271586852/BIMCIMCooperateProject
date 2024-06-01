@@ -10,7 +10,9 @@
 }
 
 
-
+.custom-dialog {
+    border-radius: 2%;
+}
 
 
 /* 图层列表样式 */

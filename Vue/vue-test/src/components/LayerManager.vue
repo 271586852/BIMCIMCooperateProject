@@ -83,7 +83,7 @@
 
     <!-- 图层管理模块 ---------->
 
-    <el-dialog v-model="isLayerControlVisible" title="图层管理" center width="300" :modal="false" draggable
+    <el-dialog v-model="isLayerControlVisible" title="图层管理" center width="300" :modal="false" draggable class="custom-dialog"
         style="border: 2px solid #606266; height: 300px; float: left; overflow: hidden;" 
         :close-on-click-modal="false" modal-class="dialog_class" :before-close="updateState">
         <el-scrollbar height="200px" style="margin-top:0px;" >

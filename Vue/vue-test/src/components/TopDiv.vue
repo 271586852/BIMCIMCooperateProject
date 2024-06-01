@@ -1,6 +1,6 @@
 <template>
-    <el-dialog v-model="uploadDivVisible" title="解读 Tif 顶点数据 " width="400" draggable :modal="false" id="container"
-        :close-on-click-modal="false" style="border: 2px solid #606266;" modal-class="dialog_class">
+    <el-dialog v-model="uploadDivVisible" title="解读 Tif 顶点数据 " width="400" draggable :modal="false" class="custom-dialog"
+        :close-on-click-modal="false" style="border: 2px solid #606266;" modal-class="dialog_class" >
         <el-upload class="upload-demo" ref="upload" action="http://localhost/tif/upload" :on-remove="handleRemove"
             :on-change="handleChange" :file-list="fileList" :auto-upload="false" multiple>
             <template #trigger>
@@ -203,17 +203,6 @@ defineExpose({
     background-color: #f9f9f9;
 }
 
-#container {
-    position: absolute;
-    width: 400px;
-    height: 600px;
-    top: 160px;
-    left: 140px;
-    border: 2px solid #909399;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
 
 /* .upload-demo {
     margin: 20px;
@@ -221,6 +210,9 @@ defineExpose({
 
 #elbtn-tif {
     margin-top: 40px;
+}
+.custom-dialog {
+    border-radius: 2%;
 }
 
 .newp {
