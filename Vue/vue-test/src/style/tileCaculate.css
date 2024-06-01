@@ -85,6 +85,7 @@
 .custom-dialog {
     z-index: 1050;
     /* 调整z-index确保对话框在其他元素之上 */
+    border-radius: 2%;
 }
 
 .dialog_class {
