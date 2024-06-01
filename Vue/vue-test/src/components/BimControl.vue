@@ -707,12 +707,12 @@ const deleteAttr = async () => {
 }
 
 .Attrwindow {
-    width: 450px;
-    height: 800px;
+    width: 30vw;
+    height: 70vh;
     /* 你可以根据需要设置这个值 */
     position: absolute;
     left: 10px;
-    top: 100px;
+    top: 160px;
     border: 1px;
     background-color: #f9f9f9;
     border-radius: 7px;

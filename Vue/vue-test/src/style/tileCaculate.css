@@ -41,13 +41,6 @@
     /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); */
 }
 
-.text-p {
-    /* margin-bottom: 2px; */
-    /* 调整行间距大小，可以根据需要进行调整 */
-    /* margin-top: 0; */
-
-}
-
 .item-center {
     text-align: center;
     margin: auto;
@@ -85,6 +78,7 @@
 .custom-dialog {
     z-index: 1050;
     /* 调整z-index确保对话框在其他元素之上 */
+    border-radius: 2%;
 }
 
 .dialog_class {

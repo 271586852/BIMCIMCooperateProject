@@ -114,8 +114,8 @@ const layers222 = [
 
 // 初始化api
 const api = new me.MegaEarthApi({
-  url: 'localhost:4001', //  客户端所在主机ip，若是本机连接可填 localhost
-  wsPort: '2334', //  选填，客户端开启的通信端口，默认为 2333
+  url: 'localhost:4000', //  客户端所在主机ip，若是本机连接可填 localhost
+  wsPort: '2333', //  选填，客户端开启的通信端口，默认为 2333
   container: "player" //  挂载视频的div ID
 });
 
@@ -164,6 +164,7 @@ api.onEvent(e => {
     console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
     // 解析 e.data.entity.meta 字符串，获取 dbId 的值
     let meta = JSON.parse(e.data.entity.meta);
+    console.log(meta) //
     Bimstore.GouLidbid = meta.dbId;
     Bimstore.NotGLmeta = meta;
     console.log("Bimstore.GouLidbid", Bimstore.GouLidbid);

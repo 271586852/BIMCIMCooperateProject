@@ -5,7 +5,7 @@
 <template>
     <el-dialog v-model="showInfo" title="Terrain瓦片顶点相对坐标" width="400" :close-on-click-modal="false" draggable
         :modal="false" :append-to-body="false" :modal-append-to-body='false' align-left
-        class="custom-dialog border-white" style="border: 2px solid #606266;" modal-class="dialog_class">
+        class="custom-dialog" style="border: 2px solid #606266;" modal-class="dialog_class">
         <el-scrollbar height="300px" class="rich-text">
             <el-text class="text-p">EPSG3857</el-text><br />
             <el-text class="text-p">{{ centerBbox.x }},{{ centerBbox.y }}</el-text><br />
