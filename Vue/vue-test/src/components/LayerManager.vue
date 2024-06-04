@@ -17,6 +17,7 @@
                 <div id="dataset-window">
                     <h4>添加数据集</h4>
                     <el-button round @click="openAddLayerWindow('3DTilesWindow')">添加3DTiles数据集</el-button>
+                    <el-button round @click="openAddLayerWindow('BimWindow')">添加构力bim模型</el-button>
                 </div>
                 <div id="component-window">
                     <h4>添加三维组件</h4>
@@ -55,7 +56,11 @@
     </div>
 
     <!-- 添加3DTiles数据集窗口 -->
-    <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree" />
+    <!-- <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree" ref="TileRef" /> -->
+    <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree"  />
+
+    <!-- 添加构力bim模型窗口 -->
+    <GouLiBimModel :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加label窗口 -->
     <Label :api="props.api" :fetchEntityTree="fetchEntityTree" />
@@ -133,6 +138,7 @@ import Polyline from './addLayers/Polyline.vue';
 import Wall from './addLayers/Wall.vue';
 import GeometryDecal from './addLayers/GeometryDecal.vue';
 import TextureDecal from './addLayers/TextureDecal.vue';
+import GouLiBimModel from './addLayers/GouLiBimModel.vue';
 
 // 使用 defineProps 定义接收的父组件的方法作为 props
 const props = defineProps({
@@ -166,6 +172,14 @@ const toggleLayerControl = () => {
 // ---图层控件-----------------------------
 
 
+// const TileRef = ref();
+// const openAddLayerWindow = (layerWindowName) => {
+//     if (TileRef.value.TilesetVisible) {
+//         TileRef.value.TilesetVisible = false;
+//     } else {
+//         TileRef.value.TilesetVisible = layerWindowName === "3DTilesWindow";
+//     }
+// };
 
 
 /**
@@ -175,6 +189,15 @@ const toggleLayerControl = () => {
 const openAddLayerWindow = (layerWindowName) => {
     if (layerWindowName === "3DTilesWindow") {
         var addDatasetWindow = document.getElementById("add-dataset-window");
+
+        if (addDatasetWindow.style.display === "none") {
+            addDatasetWindow.style.display = "block";
+        } else {
+            addDatasetWindow.style.display = "none";
+        }
+    }
+    if (layerWindowName === "BimWindow") {
+        var addDatasetWindow = document.getElementById("add-bim-window");
 
         if (addDatasetWindow.style.display === "none") {
             addDatasetWindow.style.display = "block";
@@ -252,10 +275,6 @@ const openAddLayerWindow = (layerWindowName) => {
             document.getElementById("TextureDecalWindow").style.display = "block";
         }
     }
-
-
-
-
 }
 
 

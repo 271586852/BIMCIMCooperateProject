@@ -1,6 +1,6 @@
 <template>
     <!-- TextureDecal窗口 -->
-    <div class="add-layer" id="TextureDecalWindow" style="display: none;">
+    <div class="add-layer" id="TextureDecalWindow" style="display: none;max-height: 80vh;overflow: auto ">
         <div class="labelbtn">
             <i class="el-icon el-notification__closeBtn" @click="closeTextureDecalWindow('TextureDecalWindow')"
                 @mouseover="hover = true" @mouseleave="hover = false">

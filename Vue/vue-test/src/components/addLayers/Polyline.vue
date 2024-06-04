@@ -1,6 +1,6 @@
 <template>
     <!-- Polyline窗口 -->
-    <div class="add-layer" id="polylineWindow" style="display: none;">
+    <div class="add-layer" id="polylineWindow" style="display: none;max-height: 80vh;overflow: auto;">
         <div class="labelbtn">
             <i class="el-icon el-notification__closeBtn" @click="closePolylineWindow('polylineWindow')"
                 @mouseover="hover = true" @mouseleave="hover = false">

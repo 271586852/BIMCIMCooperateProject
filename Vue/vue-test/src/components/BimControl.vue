@@ -4,47 +4,102 @@
         <el-button class="button-item" type="success" size="large" round @click="GetsubDataId">获取subDataId</el-button>
         <el-button class="button-item" type="primary" size="large" round @click="OpenAttrWindow">显示构件属性</el-button>
         <el-button class="button-item" type="primary" size="large" round @click="OpenQueryAttrWindow">查询构件属性</el-button>
-        <el-button class="button-item" type="primary" size="large" round @click="OpenModifyWindow">修改构件属性</el-button>
-        <el-button class="button-item" type="primary" size="large" round
-            @click="OpenDeleteAttrWindow">删除构件属性</el-button>
-        <el-button class="button-item" type="danger" size="large" round @click="DeleteComponent">删除构件</el-button>
+        <!-- <el-button class="button-item" type="primary" size="large" round @click="OpenModifyWindow">修改构件属性</el-button> -->
+        <!-- 修改构件属性窗口 -->
+        <el-popover placement="top" width="300" v-model:visible="isModify" trigger="click">
+            <template #reference>
+                <el-button class="button-item" type="primary" size="large" round>修改构件属性</el-button>
+            </template>
+            <el-scrollbar max-height="200px">
+                <div class="Modifywindow-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="text-align: center;">修改构件属性</h3>
+                        <el-button circle @click="addCompoAttr" style="margin-top:5px" :icon="Plus"
+                            size="small"></el-button>
+                    </div>
+                    <div v-for="(attribute, index) in CompoAttr" :key="index"
+                        style="display: flex; justify-content: space-between;">
+                        <el-input v-model="attribute.key" placeholder="键" clearable />
+                        <el-input v-model="attribute.value" placeholder="值" clearable />
+                        <el-button circle @click="deleteCompoAttr(index)" style="margin-top:5px" :icon="Delete"
+                            size="small"></el-button>
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <el-button round @click="ModifyCompoAttr" style="margin-top:5px">确定</el-button>
+                    </div>
+                </div>
+            </el-scrollbar>
+        </el-popover>
+        <!-- <el-button class="button-item" type="primary" size="large" round
+            @click="OpenDeleteAttrWindow">删除构件属性</el-button> -->
+        <!-- 删除构件属性窗口 -->
+        <el-popover placement="top" width="250" v-model:visible="isDelete" trigger="click">
+            <template #reference>
+                <el-button class="button-item" type="primary" size="large" round>删除构件属性</el-button>
+            </template>
+            <el-scrollbar max-height="200px">
+                <div class="DeleteAttrwindow-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="text-align: center;">删除构件属性</h3>
+                        <el-button circle @click="addDeleteKey" style="margin-top:5px" :icon="Plus"
+                            size="small"></el-button>
+                    </div>
+                    <div v-for="(deleteKey, Deleteindex) in deleteKeys" :key="Deleteindex"
+                        style="display: flex; justify-content: space-between;">
+                        <el-input v-model="deleteKeys[Deleteindex]" placeholder="输入要删除的属性名" clearable />
+                        <el-button circle @click="deleteDeleteAttr(Deleteindex)" style="margin-top:5px" :icon="Delete"
+                            size="small"></el-button>
+                    </div>
+                    <div style="display: flex; justify-content: center;">
+                        <el-button round @click="deleteAttr" style="margin-top:5px">确定</el-button>
+                    </div>
+                </div>
+            </el-scrollbar>
+        </el-popover>
+        <el-button class="button-item" type="danger" size="large" round @click="AskIfDeleteComponent">删除构件</el-button>
     </el-row>
 
     <!-- 构件属性信息窗口 -->
-    <div class="Attrwindow" v-if="isAttr">
-        <h2 style="text-align: center;">对象属性</h2>
-        <div v-if="GouLidbid">
-            <div v-for="(group, groupName) in groupedProps" :key="groupName">
-                <h3>{{ groupName }}</h3>
-                <table>
+    <div class="Attrwindow" v-if="isAttr" ref="AttrWindowRef" @mousedown="dragMouseDown($event, 'AttrWindowRef')">
+        <h1 style="text-align: center;">对象属性</h1>
+        <el-scrollbar max-height="40vh" style="border:none; background-color: transparent;">
+            <div v-if="GouLidbid">
+                <div v-for="(group, groupName) in groupedProps" :key="groupName">
+                    <h2>{{ groupName }}</h2>
+                    <table>
+                        <tbody>
+                            <tr v-for="(value, propName) in group" :key="propName">
+                                <td style="font-weight: bold;">{{ propName }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div v-else style="border:none">
+                <table class="AttrTable">
                     <tbody>
-                        <tr v-for="(value, propName) in group" :key="propName">
+                        <tr v-for="(value, propName) in NotGLmeta" :key="propName">
                             <td style="font-weight: bold;">{{ propName }}</td>
                             <td>{{ value }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div v-else>
-            <table class="AttrTable">
-                <tbody>
-                    <tr v-for="(value, propName) in NotGLmeta" :key="propName">
-                        <td style="font-weight: bold;">{{ propName }}</td>
-                        <td>{{ value }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        </el-scrollbar>
     </div>
+
+
+
+
 
     <!-- 搜索构件属性窗口 -->
     <div>
-        <div class="Querywindow" v-if="isQuery" @mousedown="dragMouseDown" ref="QueryAttrRef"
-            :style="{ height: queryWindowHeight }">
+        <div class="Querywindow" v-if="isQuery" ref="QueryAttrRef" :style="{ height: queryWindowHeight }"
+            @mousedown="dragMouseDown($event, 'QueryAttrRef')">
             <div>
-                <h3 style="text-align: center;">
-                    查询构件属性</h3>
+                <h2 style="text-align: center;">
+                    查询构件属性</h2>
             </div>
             <div>属性名:
                 <el-input type="text" v-model="QueryAttrName" placeholder="输入属性名称" @mousedown.stop />
@@ -56,17 +111,17 @@
                 <el-button type="primary" round @click="QueryAttr">搜索</el-button>
             </div>
             <el-divider v-if="QueryResponse">batch:id</el-divider>
-            <div v-if="QueryResponse" class="BatchIdButton">
+            <el-scrollbar v-if="QueryResponse" class="BatchIdButton" max-height="20vh">
                 <el-button v-for="(item, QRindex) in QueryResponse.data.result" :key="QRindex"
                     @click="ClickBatchId(QRindex)">
                     {{ item.props['batch:id'] }}
                 </el-button>
-            </div>
+            </el-scrollbar>
         </div>
     </div>
 
     <!-- 修改构件属性窗口 -->
-    <div class="Modifywindow" v-if="isModify">
+    <!-- <div class="Modifywindow" v-if="isModify">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3 style="text-align: center;">修改构件属性</h3>
             <el-button circle @click="addCompoAttr" style="margin-top:5px" :icon="Plus" size="small"></el-button>
@@ -81,10 +136,12 @@
         <div style="display: flex; justify-content: center;">
             <el-button round @click="ModifyCompoAttr" style="margin-top:5px">确定</el-button>
         </div>
-    </div>
+    </div> -->
+
+
 
     <!-- 删除构件属性窗口 -->
-    <div class="DeleteAttrwindow" v-if="isDelete">
+    <!-- <div class="DeleteAttrwindow" v-if="isDelete">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h3 style="text-align: center;">删除构件属性</h3>
             <el-button circle @click="addDeleteKey" style="margin-top:5px" :icon="Plus" size="small"></el-button>
@@ -98,7 +155,7 @@
         <div style="display: flex; justify-content: center;">
             <el-button round @click="deleteAttr" style="margin-top:5px">确定</el-button>
         </div>
-    </div>
+    </div> -->
 </template>
 
 
@@ -107,23 +164,24 @@ import { defineProps, ref, computed, onMounted, watchEffect, watch } from 'vue'
 import { useBimStore } from '../store/bim';
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { Delete, Plus } from '@element-plus/icons-vue'
 
 
 
 const Bimstore = useBimStore()
-const { isBim, clientId, clientSecret, layerUrl, BeareraccessToken, GouLidbid, NotGLmeta } = storeToRefs(Bimstore)
+const { isBim, clientId, clientSecret, GlBimUrl, BeareraccessToken, GouLidbid, NotGLmeta } = storeToRefs(Bimstore)
 const host = "https://api.cloud.pkpm.cn"
 const subDataId = ref('')
 const externalId = ref('')
 const ClickdbId = ref('')
 const componentId = ref('')
+const ShowDbId = ref('')
 
 // 从 localStorage 中读取值（防止刷新页面后数据丢失）
 clientId.value = localStorage.getItem('clientId') || '';
 clientSecret.value = localStorage.getItem('clientSecret') || '';
-layerUrl.value = localStorage.getItem('layerUrl') || '';
+GlBimUrl.value = localStorage.getItem('GlBimUrl') || '';
 BeareraccessToken.value = localStorage.getItem('BeareraccessToken') || '';
 
 
@@ -140,7 +198,11 @@ const ClickQueryResponse = ref(null);
 
 // 监听NotGLmeta的变化(非构力模型点击查询)
 watch(NotGLmeta, () => {
-    if (!GouLidbid.value) {
+    if (!GouLidbid) {
+        // 调整api.control.enableftclick(true)的参数
+        Bimprop.api.control.enableLeftMouseClick(true);
+
+        
         // selectedItemProps.value = NotGLmeta.value;
         console.log('点击查询非构力模型构件成功:', NotGLmeta.value.sid);  // 添加日志
     }
@@ -149,6 +211,20 @@ watch(NotGLmeta, () => {
 // 监听GouLidbid的变化(构力模型点击查询)
 watch(GouLidbid, async (newValue, oldValue) => {
     if (newValue) {
+        // 调整api.control.enableftclick(true)的参数
+        if(GouLidbid){
+            Bimprop.api.control.enableLeftMouseClick(true, {
+                nodeKey: 'dbId',
+                color: 'rgba(0, 255, 0, 0.8)',
+                transparent: 1,
+                isHighlight: true,
+                featureIDSetIndex: 0,
+                clearLastHighlight: true
+            });
+        }
+       
+
+
         ClickdbId.value = newValue;
         console.log('点击构件dbid变化:', ClickdbId.value, newValue);
 
@@ -177,6 +253,7 @@ watch(GouLidbid, async (newValue, oldValue) => {
             console.log("点击查询到符合条件的构件（构力模型）", ClickQueryResponse.value.data)
             console.log(ClickQueryResponse.value.data.result)
             componentId.value = ClickQueryResponse.value.data.result[0].xdbGuid
+            ShowDbId.value = ClickQueryResponse.value.data.result[0].props['batch:id']
         } catch (error) {
             // 请求失败，打印错误消息
             ElMessage.error("没有查询到符合条件的构件")
@@ -194,8 +271,8 @@ watch(GouLidbid, async (newValue, oldValue) => {
  
 */
 const GetsubDataId = async () => {
-    console.log('layerUrl', layerUrl.value)
-    const parts = layerUrl.value.split('/')
+    console.log('GlBimUrl', GlBimUrl.value)
+    const parts = GlBimUrl.value.split('/')
     const translationKey = parts[7]
     externalId.value = "urn:bimbox.object:translation_result_v2/" + translationKey
 
@@ -233,63 +310,49 @@ const OpenQueryAttrWindow = () => {
     console.log('打开查询构件属性窗口')
 }
 
-//查询构件属性窗口
+// 实现构件属性展示窗口和查询构件属性窗口的可拖拽
+const QueryAttrRef = ref(null);
+const AttrWindowRef = ref(null);
 let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-//实现窗口拖拽
-const QueryAttrRef = ref(null);
-function dragMouseDown(e) {
+function dragMouseDown(e, refName) {
     e.preventDefault();
     pos3 = e.clientX;
     pos4 = e.clientY;
     document.onmouseup = closeDragElement;
-    document.onmousemove = elementDrag;
+    document.onmousemove = (event) => elementDrag(event, refName);
 }
 
-function elementDrag(e) {
-    if (!QueryAttrRef.value) return;
+function elementDrag(e, refName) {
+    const elmnt = refName === 'QueryAttrRef' ? QueryAttrRef.value : AttrWindowRef.value;
+    if (!elmnt) return;
 
     e.preventDefault();
-    // 计算鼠标移动的距离
     pos1 = pos3 - e.clientX;
     pos2 = pos4 - e.clientY;
     pos3 = e.clientX;
     pos4 = e.clientY;
 
-    const elmnt = QueryAttrRef.value;
-
-    // 计算新位置
     let newLeft = elmnt.offsetLeft - pos1;
     let newTop = elmnt.offsetTop - pos2;
 
-    // 获取浏览器窗口的尺寸
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
-
-    // 获取元素的尺寸
     const elmntWidth = elmnt.offsetWidth;
     const elmntHeight = elmnt.offsetHeight;
 
-    // 确保元素不会移动到浏览器窗口外
-    // 不允许左边界超出
     if (newLeft < 0) {
         newLeft = 0;
-    }
-    // 不允许右边界超出
-    else if (newLeft + elmntWidth > windowWidth) {
+    } else if (newLeft + elmntWidth > windowWidth) {
         newLeft = windowWidth - elmntWidth;
     }
 
-    // 不允许上边界超出
     if (newTop < 40) {
         newTop = 40;
-    }
-    // 不允许下边界超出
-    else if (newTop + elmntHeight > windowHeight) {
+    } else if (newTop + elmntHeight > windowHeight) {
         newTop = windowHeight - elmntHeight;
     }
 
-    // 应用新位置
     elmnt.style.left = newLeft + 'px';
     elmnt.style.top = newTop + 'px';
 }
@@ -300,7 +363,9 @@ function closeDragElement() {
 }
 
 
-let queryWindowHeight = ref('200px');
+
+
+let queryWindowHeight = ref('19vh');
 const QueryAttrName = ref('')
 const QueryAttrValue = ref('')
 const QueryResponse = ref(null);
@@ -375,6 +440,8 @@ const ClickBatchId = (QRindex) => {
     // 记录当前选中的构件的 xdbGuid，以便后续操作
     componentId.value = QueryResponse.value.data.result[QRindex].xdbGuid
 
+    ShowDbId.value = QueryResponse.value.data.result[QRindex].props['batch:id']
+
     console.log('selectedItemProps:', selectedItemProps.value);  // 添加日志
     isAttr.value = true;  // 显示构件属性窗口
 };
@@ -404,7 +471,28 @@ const groupedProps = computed(() => {
 
 
 
+
 //删除构件相关
+const AskIfDeleteComponent = async () => {
+    ElMessageBox.confirm(`确定要删除dbid:${ShowDbId.value}构件吗？`, 'Warning', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+    }).then(() => {
+        ElMessage({
+            type: 'info',
+            message: '确定删除'
+        });
+        DeleteComponent()
+    }).catch(() => {
+        ElMessage({
+            type: 'info',
+            message: '已取消删除'
+        });
+    });
+}
+
+
 const DeleteComponent = async () => {
     if (componentId.value === '' || subDataId.value === '') {
         ElMessage.error("请先通过查询选中构件")
@@ -631,25 +719,20 @@ const deleteAttr = async () => {
 }
 
 .Querywindow {
-    width: 300px;
-
-    /* 设置高度 */
-    max-height: 500px;
-    overflow: auto;
-    /* 确保高度不超过视口高度 */
+    width: 22vh;
+    /* max-height: 18vh; */
     position: absolute;
     top: 40px;
     right: 130px;
-    /* transform: translate(0, 0); */
-    /* 重置 transform 属性 */
-    border: 1px;
-    background-color: #f9f9f9;
+    border: 1px solid #555;
+    background-color: #2e2e2e;
     border-radius: 7px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 10px;
     z-index: 1000;
-    font-size: 15px;
+    font-size: 11px;
     line-height: 1.5;
+    color: #f9f9f9;
 }
 
 .BatchIdButton {
@@ -667,10 +750,13 @@ const deleteAttr = async () => {
 }
 
 
-.Modifywindow {
+
+
+
+/* .Modifywindow {
     width: 250px;
     height: 250px;
-    /* 你可以根据需要设置这个值 */
+    
     position: absolute;
     left: 490px;
     bottom: 80px;
@@ -679,17 +765,17 @@ const deleteAttr = async () => {
     border-radius: 7px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 10px;
-    /* cursor: move; */
-    /* 可拖动的光标样式 */
+    
+   
     z-index: 1000;
     font-size: 15px;
     line-height: 1.5;
-    /* 增加行距 */
-    overflow: auto;
-    /* 当内容溢出时显示滚动条 */
-}
 
-.DeleteAttrwindow {
+    overflow: auto;
+    
+} */
+
+/* .DeleteAttrwindow {
     width: 200px;
     height: 200px;
     position: absolute;
@@ -702,53 +788,45 @@ const deleteAttr = async () => {
     z-index: 1000;
     font-size: 15px;
     line-height: 1.5;
-    /* 增加行距 */
     overflow: auto;
-}
+} */
 
 .Attrwindow {
-    width: 30vw;
-    height: 70vh;
-    /* 你可以根据需要设置这个值 */
+    width: 25vw;
+    max-height: 50vh;
     position: absolute;
-    left: 10px;
-    top: 160px;
+    left: 0px;
+    top: 100px;
     border: 1px;
-    background-color: #f9f9f9;
+    background-color: #2e2e2e;
+    /* Dark background */
     border-radius: 7px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     padding: 10px;
-    /* cursor: move; */
-    /* 可拖动的光标样式 */
     z-index: 1000;
-    font-size: 15px;
+    font-size: 12px;
     line-height: 1.5;
-    /* 增加行距 */
-    overflow: auto;
-    /* 当内容溢出时显示滚动条 */
+    color: #f9f9f9;
+    /* Light text color */
+    /* overflow: auto; */
 }
 
 .Attrwindow table {
     width: 100%;
-    /* 让表格宽度为 100% */
 }
 
 .Attrwindow td {
     text-align: left;
-    /* 让表格数据左对齐 */
 }
 
 .Attrwindow div {
-    background-color: #f0f0f0;
-    /* 设置背景颜色 */
+    background-color: #3e3e3e;
+    /* Slightly lighter dark background */
     margin-bottom: 10px;
-    /* 设置下边距 */
-    border: 1px solid #ccc;
-    /* 设置边框 */
+    border: 1px solid #555;
+    /* Darker border */
     border-radius: 5px;
-    /* 设置边框半径 */
     padding: 10px;
-    /* 设置内边距 */
 }
 
 .AttrTable {
@@ -756,7 +834,10 @@ const deleteAttr = async () => {
 }
 
 .AttrTable td {
-    border: 1px solid black;
+    border: 1px solid #777;
+    /* Darker border */
     padding: 5px;
+    color: #f9f9f9;
+    /* Light text color */
 }
 </style>
