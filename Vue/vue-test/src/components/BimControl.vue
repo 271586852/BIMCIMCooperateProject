@@ -63,7 +63,7 @@
     <div class="Attrwindow" v-if="isAttr" ref="AttrWindowRef" @mousedown="dragMouseDown($event, 'AttrWindowRef')">
         <h1 style="text-align: center;">对象属性</h1>
         <el-scrollbar max-height="40vh" style="border:none; background-color: transparent;">
-            <div v-if="GouLidbid">
+            <div v-if="GouLidbid" @mousedown.stop>
                 <div v-for="(group, groupName) in groupedProps" :key="groupName">
                     <h2>{{ groupName }}</h2>
                     <table>
@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div v-else style="border:none">
-                <table class="AttrTable">
+                <table class="AttrTable" @mousedown.stop>
                     <tbody>
                         <tr v-for="(value, propName) in NotGLmeta" :key="propName">
                             <td style="font-weight: bold;">{{ propName }}</td>
@@ -197,14 +197,22 @@ let selectedItemProps = ref({});
 const ClickQueryResponse = ref(null);
 
 // 监听NotGLmeta的变化(非构力模型点击查询)
-watch(NotGLmeta, () => {
-    if (!GouLidbid) {
+watch(NotGLmeta, async (newmeta,oldmeta) => {
+    if(newmeta && GouLidbid.value == undefined){
         // 调整api.control.enableftclick(true)的参数
-        Bimprop.api.control.enableLeftMouseClick(true);
+        Bimprop.api.control.enableLeftMouseClick(true,{
+                nodeKey: 'sid',
+                color: 'rgba(0, 255, 0, 0.8)',
+                isHighlight: true,
+                transparent: 1,
+                featureIDSetIndex: 0, 
+                clearLastHighlight: true
+            });
 
         
         // selectedItemProps.value = NotGLmeta.value;
-        console.log('点击查询非构力模型构件成功:', NotGLmeta.value.sid);  // 添加日志
+        console.log('点击查询非构力模型构件成功:', newmeta.sid);  // 添加日志
+    
     }
 })
 
@@ -212,7 +220,7 @@ watch(NotGLmeta, () => {
 watch(GouLidbid, async (newValue, oldValue) => {
     if (newValue) {
         // 调整api.control.enableftclick(true)的参数
-        if(GouLidbid){
+        if(newValue != undefined){
             Bimprop.api.control.enableLeftMouseClick(true, {
                 nodeKey: 'dbId',
                 color: 'rgba(0, 255, 0, 0.8)',
@@ -365,7 +373,7 @@ function closeDragElement() {
 
 
 
-let queryWindowHeight = ref('19vh');
+let queryWindowHeight = ref('21vh');
 const QueryAttrName = ref('')
 const QueryAttrValue = ref('')
 const QueryResponse = ref(null);
