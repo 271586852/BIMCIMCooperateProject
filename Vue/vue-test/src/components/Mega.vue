@@ -16,8 +16,8 @@
     <!-- bim模型操作按钮 -->
     <BimControl :api="api" />
 
-    <el-button type="info" :icon="icon" circle @click="toggleFps"
-      style="z-index: 9999; bottom: 20px; right: 20px; position: fixed;"></el-button>
+    <el-button type="info" :icon="icon" circle @click="toggleFps" :style="{ color: buttonColor }"
+      style="z-index: 9999; bottom: 20px; right: 20px; position: fixed; background-color: transparent; border: none; font-size: 24px; width: 50px; height: 50px;"></el-button>
   </div>
 </template>
 
@@ -255,8 +255,9 @@ let time = 11.5;
 api.weather.setTime(time);
 
 // 使用 shallowRef 而不是 ref
-const icon = shallowRef(Open); // 假设这是打开时的图标
+const icon = shallowRef(TurnOff); // 假设这是打开时的图标
 console.log("icon", icon.value);
+const buttonColor = ref('white');
 
 // const toggleFps = () => {
 //   icon.value = icon.value === Open ? TurnOff : Open;
@@ -268,7 +269,8 @@ const toggleFps = async () => {
   try {
     const res = await api.toggleFps();
     console.log('帧率信息:', res); // 处理结果
-    icon.value = icon.value === Open ? TurnOff : Open;
+    icon.value = icon.value === TurnOff ? Open : TurnOff;
+    buttonColor.value = icon.value === TurnOff ? 'white' : '#79bbff';
     console.log('icon', icon.value);
   } catch (error) {
     console.error('切换帧率显示失败:', error);
