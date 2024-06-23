@@ -100,7 +100,7 @@
       style="top: 50px; z-index: 2024; width: 330px; display: flex; padding: 14px 26px 14px 13px; border-radius: 8px; position: fixed; flex-direction: column;"
       v-show="isDivVisible">
       <h2 class="el-notification__title"
-        style="font-weight:700; font-size:16px; line-height: 24px; color: black; margin: 0; width: 100%;">鼠标点击经纬度</h2>
+        style="font-weight:700; font-size:16px; line-height: 24px; margin: 0; width: 100%;">鼠标点击经纬度</h2>
       <div class="el-notification__content">
         <i style="color: teal;">
           <p>经度：{{ location[0] }}</p>
@@ -123,7 +123,7 @@
       style="top: 190px; z-index: 2024; width: 330px; display: flex; padding: 14px 26px 14px 13px; border-radius: 8px; position: fixed; flex-direction: column;"
       v-show="ViewDivVisible">
       <h2 class="el-notification__title"
-        style="font-weight:700; font-size:16px; line-height: 24px; color: black; margin: 0; width: 100%;">可视区域的范围</h2>
+        style="font-weight:700; font-size:16px; line-height: 24px; margin: 0; width: 100%;">可视区域的范围</h2>
       <div class="el-notification__content">
         <i style="color: teal;">
           <p>west: {{ viewRectangle.west }}</p>
@@ -145,7 +145,7 @@
     <TileCaculate ref="refTile" />
     
     <!-- 上传tif -->
-    <TopDiv />
+    <TopDiv ref="refTiff" />
 
 
 
@@ -184,6 +184,7 @@ import {
   OfficeBuilding
 } from "@element-plus/icons-vue";
 import { storeToRefs } from "pinia";
+import TextureDecal from "./addLayers/TextureDecal.vue";
 
 let lastClicked = ref("");
 const activeIndex = ref("");
@@ -195,6 +196,7 @@ const draggable = ref(false);
 const formLabelWidth = "140px";
 
 const refTile = ref<any>(null);
+const refTiff = ref<any>(null);
 
 //从vuex数据仓库里面取数据
 const store = useStore();
@@ -287,7 +289,9 @@ const clickUser = () => {
 
 // --点击图层管理
 const layerControl = () => {
-  store.commit("updateLayerControlVisible", !LayerControlVisible.value);
+  store.commit("updateLayerControlVisible");
+  console.log('调用',LayerControlVisible.value);
+  
 }
 
 // 显示框选瓦片信息
@@ -303,9 +307,12 @@ const showTerrainInfo = () => {
   refTile.value.showInfoFunction();
 }
 
+
 // 显示上传瓦片
 const showUpload =()=>{
-  store.commit("updateUploadDivVisible",!uploadDivVisible.value);
+  // store.commit("updateUploadDivVisible",true);
+  refTiff.value.uploadDivVisibleFunction();
+  console.log('输出');
 }
 
 // const gridData = computed(() => store.state.gridData);

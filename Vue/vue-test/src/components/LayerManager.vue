@@ -17,6 +17,7 @@
                 <div id="dataset-window">
                     <h4>添加数据集</h4>
                     <el-button round @click="openAddLayerWindow('3DTilesWindow')">添加3DTiles数据集</el-button>
+                    <el-button round @click="openAddLayerWindow('BimWindow')">添加构力bim模型</el-button>
                 </div>
                 <div id="component-window">
                     <h4>添加三维组件</h4>
@@ -55,72 +56,71 @@
     </div>
 
     <!-- 添加3DTiles数据集窗口 -->
-    <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <!-- <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree" ref="TileRef" /> -->
+    <Tileset :api="props.api" :fetchEntityTree="fetchEntityTree"  />
+
+    <!-- 添加构力bim模型窗口 -->
+    <GouLiBimModel :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加label窗口 -->
     <Label :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加marker窗口 -->
-    <Marker :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <Marker :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加WaveDecal窗口 -->
-    <WaveDecal :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <WaveDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加ODLine窗口 -->
-    <ODLine :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <ODLine :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加Polyline窗口 -->
-    <Polyline :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <Polyline :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加Walls窗口 -->
-    <Wall :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <Wall :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加GeometryDecal窗口 -->
-    <GeometryDecal :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <GeometryDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 添加TextureDecal窗口 -->
-    <TextureDecal :api="props.api" :fetchEntityTree="fetchEntityTree"/>
+    <TextureDecal :api="props.api" :fetchEntityTree="fetchEntityTree" />
 
     <!-- 图层管理模块 ---------->
 
-    <div class="container">
-        <!-- <el-icon class="icon-big" @click="toggleLayerControl">
-            <icon-menu />
-        </el-icon> -->
-        <transition name="fade" mode="out-in">
-            <div class="layer-control" v-show="isLayerControlVisible" @mousedown="dragMouseDown" ref="layerControlRef">
-                <h3 class="no-padding center-title">图层管理</h3>
-                <ul class="layer-list" v-for="layer in layers" :key="layer.id" :id="layer.id">
-                    <li class="layer-item" :id="layer.id" :key="layer.id" title="双击可将视图切换至合适位置">
-                        <el-checkbox type="checkbox" :id="layer.name" v-model="layer.visible"
-                            @change="toggleLayerVisibility(layer)" />
-                        <span class="layer-name" @click="toggleCollapse(layer.id)" :for="layer.name"
-                            @dblclick="flyToLayer(layer.id)">
-                            <svg v-if="layer.overlays.length > 0" class="layer-svg" xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 1024 1024" data-v-ea893728=""
-                                :style="{ 'transform': isCollapsed[layer.id] ? 'rotate(0deg)' : 'rotate(90deg)', 'transition': 'transform 0.3s' }">
-                                <path fill="currentColor" class="svg-path"
-                                    d="M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0z">
-                                </path>
-                            </svg>{{ layer.name }}</span>
-                        <el-button class="delete-layer-symbol button" @click="deleteLayer(layer.id)"
-                            text>Delete</el-button>
-                        <ul v-if="layer.overlays" :class="{ 'collapse': isCollapsed[layer.id] }">
-                            <li v-for="overlay in layer.overlays" :key="overlay.id" class="overlay-item"
-                                style="margin-left: 20px;" title="双击可将视图切换至合适位置">
-                                <el-checkbox type="checkbox" :id="overlay.name" v-model="overlay.visible"
-                                    @change="toggleOverlayVisibility(layer.id, overlay)" />
-                                <span class="layer-name" :for="overlay.name" @dblclick="flyToLayer(layer.id)">{{
-                    overlay.name }}</span>
-                                <el-button class="delete-layer-symbol button"
-                                    @click="deleteOverlay(layer.id, overlay.id)" text>Delete</el-button>
-                            </li>
-                        </ul>
+    <el-dialog v-model="isLayerControlVisible" title="图层管理" center width="300" :modal="false" draggable class="custom-dialog"
+        style="border: 2px solid #606266; height: 300px; float: left; overflow: hidden;" 
+        :close-on-click-modal="false" modal-class="dialog_class" :before-close="updateState">
+        <el-scrollbar height="200px" style="margin-top:0px;" >
+                <ul class="layer-list">
+                    <li v-for="layer in layers" :key="layer.id" :id="layer.id" class="layer-item" title="双击可将视图切换至合适位置">
+                        <el-checkbox v-model="layer.visible" @change="toggleLayerVisibility(layer)">
+                            <span class="layer-name" @click="toggleCollapse(layer.id)" @dblclick="flyToLayer(layer.id)">
+                                <svg v-if="layer.overlays.length > 0" class="layer-svg" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 1024 1024" :style="{ 'transform': isCollapsed[layer.id] ? 'rotate(0deg)' : 'rotate(90deg)', 'transition': 'transform 0.3s' }">
+                                    <path fill="currentColor"
+                                        d="M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0z">
+                                    </path>
+                                </svg>{{ layer.name }}
+                            </span>
+                        </el-checkbox>
+                        <el-button class="delete-layer-symbol" @click="deleteLayer(layer.id)" text>Delete</el-button>
+                        <el-collapse-transition>
+                            <ul v-if="!isCollapsed[layer.id]" class="overlay-list">
+                                <li v-for="overlay in layer.overlays" :key="overlay.id" class="overlay-item"
+                                    style="margin-left: 20px;" title="双击可将视图切换至合适位置">
+                                    <el-checkbox v-model="overlay.visible"
+                                        @change="toggleOverlayVisibility(layer.id, overlay)">
+                                        {{ overlay.name }}
+                                    </el-checkbox>
+                                    <el-button class="delete-layer-symbol" @click="deleteOverlay(layer.id, overlay.id)" text>Delete</el-button>
+                                </li>
+                            </ul>
+                        </el-collapse-transition>
                     </li>
                 </ul>
-            </div>
-        </transition>
-    </div>
+        </el-scrollbar>
+    </el-dialog>
 </template>
 
 <script setup>
@@ -138,6 +138,7 @@ import Polyline from './addLayers/Polyline.vue';
 import Wall from './addLayers/Wall.vue';
 import GeometryDecal from './addLayers/GeometryDecal.vue';
 import TextureDecal from './addLayers/TextureDecal.vue';
+import GouLiBimModel from './addLayers/GouLiBimModel.vue';
 
 // 使用 defineProps 定义接收的父组件的方法作为 props
 const props = defineProps({
@@ -155,20 +156,30 @@ const isLayerControlVisible = computed(() => store.state.LayerControlVisible); /
 
 
 
-
+// 更新窗口显示状态
+const updateState = () => {
+    store.commit('updateLayerControlVisible', false);
+}
 
 
 // --图层管理隐藏与展开
+const LayerControlVisible = ref(false);
 
-// const isLayerControlVisible = ref(false);
-
-// function toggleLayerControl() {
-//     isLayerControlVisible.value = !isLayerControlVisible.value;
-// }
+const toggleLayerControl = () => {
+    LayerControlVisible.value = !LayerControlVisible.value;
+}
 
 // ---图层控件-----------------------------
 
 
+// const TileRef = ref();
+// const openAddLayerWindow = (layerWindowName) => {
+//     if (TileRef.value.TilesetVisible) {
+//         TileRef.value.TilesetVisible = false;
+//     } else {
+//         TileRef.value.TilesetVisible = layerWindowName === "3DTilesWindow";
+//     }
+// };
 
 
 /**
@@ -178,6 +189,15 @@ const isLayerControlVisible = computed(() => store.state.LayerControlVisible); /
 const openAddLayerWindow = (layerWindowName) => {
     if (layerWindowName === "3DTilesWindow") {
         var addDatasetWindow = document.getElementById("add-dataset-window");
+
+        if (addDatasetWindow.style.display === "none") {
+            addDatasetWindow.style.display = "block";
+        } else {
+            addDatasetWindow.style.display = "none";
+        }
+    }
+    if (layerWindowName === "BimWindow") {
+        var addDatasetWindow = document.getElementById("add-bim-window");
 
         if (addDatasetWindow.style.display === "none") {
             addDatasetWindow.style.display = "block";
@@ -255,10 +275,6 @@ const openAddLayerWindow = (layerWindowName) => {
             document.getElementById("TextureDecalWindow").style.display = "block";
         }
     }
-
-
-
-
 }
 
 
@@ -465,250 +481,4 @@ function closeDragElement() {
 // --可拖拽控件----
 </script>
 
-<style>
-#layer-add {
-    /* 添加或调整样式以改善外观 */
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    background-color: white;
-    border: 1px solid #ddd;
-    padding: 10px;
-    cursor: move;
-}
-
-
-
-
-
-
-/* 图层列表样式 */
-.layer-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* 图层项样式 */
-.layer-item {
-    margin-bottom: 7px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    cursor: default;
-}
-
-.layer-item:hover {
-    opacity: 0.9;
-    transform: scale(1.01);
-    /* 放大到原来的1.1倍 */
-}
-
-.delete-layer-symbol {
-    float: right;
-    margin-right: 10px;
-    background-color: #f9f9f9;
-    border: none;
-    cursor: pointer;
-    align-items: center;
-}
-
-.delete-layer-symbol:hover {
-    opacity: 0.8;
-    color: red;
-}
-
-/* 图层管理控件样式 */
-#divlogs {
-    position: absolute;
-    /* border: 10px; */
-    white-space: pre-line;
-    /* 保留空格和换行符 */
-    /* resize: vertical; 允许用户垂直调整元素的大小 */
-    /*overflow: auto;  如果内容超出 #bottomInfo 的大小，显示滚动条 */
-    overflow-x: hidden;
-    padding-left: 50px;
-    /* 文本离左边有 10px 的距离 */
-    padding-bottom: 30px;
-    /* padding-top: 50px; */
-}
-
-#toptext {
-    position: sticky;
-    /* position: sticky;  */
-    /* bottom: 0%; */
-    padding-left: 2%;
-    display: flex;
-    align-items: center;
-    height: 18%;
-    margin-top: 0%;
-    top: 0px;
-    width: 100%;
-    background-color: rgb(240, 239, 239);
-    border: 2px solid rgb(228, 231, 237);
-    z-index: 10;
-    font-weight: bold;
-}
-
-#text-span:hover {
-    color: rgb(64, 158, 255);
-}
-
-/* 图层管理控件样式 */
-.layer-control {
-    width: 350px;
-    position: absolute;
-    right: 10px;
-    top: 400px;
-    border: 1px;
-    background-color: #f9f9f9;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    border-radius: 5%;
-    cursor: move;
-    /* 可拖动的光标样式 */
-    z-index: 10;
-}
-
-/* .add-layer {
-    width: 200px;
-    position: absolute;
-    left: 10px;
-    top: 50px;
-    border: 1px solid #ddd;
-    background-color: #f9f9f9;
-    padding: 10px;
-    cursor: move;
-    /* 可拖动的光标样式 */
-/* z-index: 1000; */
-/* } */
-.add-layer {
-    width: 300px;
-    position: absolute;
-    left: 10px;
-    top: 40px;
-    border: 1px;
-    background-color: #f9f9f9;
-    border-radius: 7px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    padding: 10px;
-    /* cursor: move; */
-    /* 可拖动的光标样式 */
-    z-index: 1000;
-    font-size: 15px;
-    line-height: 1.5;
-    /* 增加行距 */
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-}
-
-/* 图层列表样式 */
-#layer-list {
-    list-style-type: none;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 0;
-    margin-left: 8px;
-}
-
-
-#layerControl-div {
-    position: fixed;
-    border-radius: 8px;
-    top: 40px;
-    right: 0;
-    border: 1px;
-    /* Add a border */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    /* Add a shadow */
-    padding: 14px 26px 14px 13px;
-    flex-direction: column;
-    background-color: #f9f9f9;
-    z-index: 15;
-}
-
-.custom-row {
-    margin-top: 1vh;
-    /* Adjust as needed */
-}
-
-.labelbtn {
-    text-align: right;
-}
-
-/* 按钮样式 */
-.el-icon.el-notification__closeBtn {
-    cursor: pointer;
-}
-
-.el-icon.el-notification__closeBtn svg.hovered {
-    transform: scale(1.5);
-    color: rgb(64, 158, 255);
-}
-
-/* 图层管理 */
-.overlay-item {
-    list-style-type: none;
-    background-color: #f9f9f9;
-}
-
-.overlay-item:hover {
-    opacity: 0.9;
-}
-
-/* 添加样式以控制折叠效果 */
-.collapse {
-    display: none;
-}
-
-.layer-name {
-    font-size: 16px;
-    font-weight: 600;
-    padding: 0;
-    margin-left: 15px;
-    cursor: pointer;
-}
-
-.layer-svg {
-    left: 0;
-    height: 13px;
-    stroke-width: 10px;
-}
-
-.center-title {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.no-padding {
-    padding: 0;
-    margin-top: 0;
-}
-
-.icon-big {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    font-size: 30px;
-    color: black;
-    right: 50%;
-    top: 50%;
-    cursor: pointer;
-    border-radius: 50%;
-}
-
-/* 动画效果 */
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-</style>
+<style src="@/assets/css/LayerManager.css"></style>

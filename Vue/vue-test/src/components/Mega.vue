@@ -1,9 +1,9 @@
- <!--
+<!--
  * @FileDescription: MegaEarth API入口，包括其初始化与事件监听
  * @LastEditTime: 1.20
  -->
 
- <template>
+<template>
   <div id="container">
     <div id="player"></div>
 
@@ -16,6 +16,8 @@
     <!-- bim模型操作按钮 -->
     <BimControl :api="api" />
 
+    <el-button type="info" :icon="icon" circle @click="toggleFps" :style="{ color: buttonColor }"
+      style="z-index: 9999; bottom: 20px; right: 20px; position: fixed; background-color: transparent; border: none; font-size: 24px; width: 50px; height: 50px;"></el-button>
   </div>
 </template>
 
@@ -25,11 +27,15 @@ import PageControls from "./PageControls.vue";
 import LayerManager from "./LayerManager.vue";
 import BimControl from "./BimControl.vue";
 
-import { onMounted, ref, watch, computed } from "vue";
+import { onMounted, ref, watch, computed, shallowRef } from "vue";
 import { useStore } from "vuex";
 import { ElMessage, ElNotification } from "element-plus";
 import { useBimStore } from '../store/bim';
 import { storeToRefs } from 'pinia';
+import {
+  TurnOff,
+  Open,
+} from '@element-plus/icons-vue'
 import "/src/assets/me.min.js";
 
 
@@ -40,7 +46,7 @@ const store = useStore();
 
 // 从bimstore数据仓库里面取数据
 const Bimstore = useBimStore()
-const {clickComponent} = storeToRefs(Bimstore)
+const { GouLidbid, NotGLmeta } = storeToRefs(Bimstore)
 
 const ref_inside = ref(null); // 子组件
 
@@ -158,14 +164,17 @@ api.onEvent(e => {
     // 点击事件反馈，需要在api.control处开启点击事件
     store.commit("updateLocation", e.data.location);
 
-    console.log("点击查询构件信息"); 
+    console.log("点击查询构件信息");
     console.log(e.data.entity) // entity相关
     console.log(e.data.entity.id) // 目前仅支持Tileset数据id的查询
     console.log(e.data.entity.meta) // 所点击的Bim构件信息，是个字符串，需要调用JSON.parse()解析，要完成该查询对数据组织形式有要求
     // 解析 e.data.entity.meta 字符串，获取 dbId 的值
     let meta = JSON.parse(e.data.entity.meta);
-    Bimstore.clickComponent = meta.dbId;
-    console.log("Bimstore.clickComponent", Bimstore.clickComponent);
+    console.log(meta) //
+    Bimstore.GouLidbid = meta.dbId;
+    Bimstore.NotGLmeta = meta;
+    console.log("Bimstore.GouLidbid", Bimstore.GouLidbid);
+    console.log("Bimstore.NotGLmeta", Bimstore.NotGLmeta);
     console.log(e.data.entity.userData) // 所点击的Tileset数据所携带的userData
   }
 
@@ -245,6 +254,36 @@ api.weather.set(weather1);
 let time = 11.5;
 api.weather.setTime(time);
 
+// 使用 shallowRef 而不是 ref
+const icon = shallowRef(TurnOff); // 假设这是打开时的图标
+console.log("icon", icon.value);
+const buttonColor = ref('white');
+
+// const toggleFps = () => {
+//   icon.value = icon.value === Open ? TurnOff : Open;
+//   console.log('icon', icon.value);
+// };
+
+
+const toggleFps = async () => {
+  try {
+    const res = await api.toggleFps();
+    console.log('帧率信息:', res); // 处理结果
+    icon.value = icon.value === TurnOff ? Open : TurnOff;
+    buttonColor.value = icon.value === TurnOff ? 'white' : '#79bbff';
+    console.log('icon', icon.value);
+  } catch (error) {
+    console.error('切换帧率显示失败:', error);
+  }
+};
+
+// 假设有一个按钮，用户点击时调用 toggleFps 方法
+const fpsToggleButton = ref(null);
+
+// 点击按钮时调用 toggleFps 方法
+fpsToggleButton.value = () => toggleFps();
+
+
 // 输出图层
 // 获取entity实体树相关信息
 api.entityTree.get().then(entityTree => {
@@ -265,4 +304,4 @@ api.tileset.overlay
 
 </script>
 
-<style src="@/style/MegaCSS.css"  scoped></style>
+<style src="@/style/MegaCSS.css" scoped></style>
