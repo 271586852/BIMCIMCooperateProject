@@ -37,8 +37,8 @@ const dialogVisible = computed(() => store.state.userVisible);
 
 
 const form = ref({
-    url: 'localhost:4000',
-    wsPort: '2333'
+    url: 'localhost:4003',
+    wsPort: '2336'
 })
 
 

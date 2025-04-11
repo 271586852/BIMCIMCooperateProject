@@ -2,7 +2,7 @@
 .el-menu-demo {
   padding-left: 2%;
   padding-right: 3%;
-  height: 40px;
+  height: 50px;
 }
 
 .flex-grow {
@@ -14,6 +14,7 @@
   display: flex;
   /* justify-content: center; */
   align-items: center;
+  font-size: 20px;
 }
 
 .moveWithMouse {
@@ -77,7 +78,8 @@ h2 {
 
 .el-notification__title {
   font-weight: 700;
-  font-size: var(--el-notification-title-font-size);
+  /* font-size: var(--el-notification-title-font-size); */
+  font-size: 20px;
   line-height: var(--el-notification-icon-size);
   color: var(--el-notification-title-color);
   margin: 0;
@@ -103,6 +105,10 @@ h2 {
 }
 
 /* 用户表单 */
+
+.el-sub-menu{
+  font-size: 20px;
+}
 
 .el-input {
   width: 200px;
